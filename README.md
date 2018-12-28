@@ -4,6 +4,8 @@ Yet another chess engine.
 
 Started off as a codepen, became a mostly complete chess engine.
 
+![](img/screenshot1.png?raw=true)
+
 TODO:
 *(in the order i feel like doing them)*
  - [ ] API (medium) 
@@ -11,5 +13,6 @@ TODO:
  - [ ] finish castling notation (& prevent castling out of, through, and into check) (medium)
  - [ ] promote pawn (easy)
  - [ ] en passant (easy-medium)
- - [ ] improved algebraic notation
- - [ ] end game (easy)
+ - [ ] score tracking (easy)
+ - [ ] history (easy)
+ - [ ] improved algebraic notation (hard)
