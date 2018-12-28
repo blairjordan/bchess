@@ -4,6 +4,8 @@ Yet another chess engine.
 
 Started off as a codepen, became a mostly complete chess engine.
 
+![](img/screenshot1.png?raw=true)
+
 TODO:
 *(in the order i feel like doing them)*
  - [ ] API (medium) 
