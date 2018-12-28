@@ -11,5 +11,6 @@ TODO:
  - [ ] finish castling notation (& prevent castling out of, through, and into check) (medium)
  - [ ] promote pawn (easy)
  - [ ] en passant (easy-medium)
- - [ ] improved algebraic notation
- - [ ] end game (easy)
+ - [ ] score tracking (easy)
+ - [ ] history (easy)
+ - [ ] improved algebraic notation (hard)
