@@ -1,6 +1,10 @@
-const { Chess } = require('./js/chess');
+const { Chess, Piece } = require('./js/chess');
 
-let chess = new Chess();
+const chess = new Chess();
 chess.init();
+chess.move({from:'f2',to:'f4'});
+chess.move({from:'c7',to:'c5'});
 console.log(chess.ascii());
-chess.move('b2','b4');
+console.log(chess.get({piece:'d1'}));
+chess.set({square:'a5', piece: new Piece('K','white')});
+console.log(chess.ascii());
