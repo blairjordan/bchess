@@ -228,9 +228,9 @@ class Chess {
   }
 
   // find pieces using search criteria
-  static find(opts) {
+  find(opts) {
     const { name, color } = opts;
-    return flatten().filter(f => (
+    return this.flatten().filter(f => (
       ((typeof (name) === 'undefined') || (f.piece.name === name))
       &&
       ((typeof (color) === 'undefined') || (f.piece.color === color))
@@ -246,12 +246,12 @@ class Chess {
   }
 
   // mark return checked positions
-  static check() {
+  check() {
     let checked = [];
-    find({}).forEach(o => {
+    this.find({}).forEach(o => {
       this.getAvailableMoves(o).forEach(m => {
         if (m.piece.name === KING)
-          checked.push(m);
+          checked.push({checked:m,by:o});
       });
     });
     return checked;
