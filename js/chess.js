@@ -42,10 +42,6 @@ class Piece {
   hasMoved() {
     return this.moves !== 0;
   }
-
-  getClass() {
-    return `${(this.name) ? 'piece ' : ''}${this.name}${this.name ? ' ' + this.color : ''}`;
-  }
 }
 
 class Move {
