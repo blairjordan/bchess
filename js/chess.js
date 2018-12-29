@@ -262,7 +262,7 @@ class Chess {
     const board = this.board.reduce((prev, curr, idx) => {
       prev += `${Chess.rankIdx(idx)} | `;
       curr.forEach(f => {
-        const check = (this.check().filter(c => (c.checked.rank === f.rank && c.checked.file === f.file)).length > 0) ? 'X' : '';
+        const check = ((f.piece.name === KING) && (this.check().filter(c => (c.checked.rank === f.rank && c.checked.file === f.file)).length > 0)) ? 'X' : '';
         const name = (f.piece.color === OPPONENT_COLOR) ? check.toLowerCase() || f.piece.name.toLowerCase() : check || f.piece.name;
         prev += ` ${name || '.'} `;
       });
