@@ -9,3 +9,4 @@ console.log(chess.get({piece:'d1'}));
 chess.set({square:'a6', piece: new Piece('K','white')});
 console.log(chess.ascii());
 console.log(chess.check());
+console.log(chess.available({square:'d8'}));

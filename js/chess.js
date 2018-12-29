@@ -249,7 +249,7 @@ class Chess {
   check() {
     let checked = [];
     this.find({}).forEach(o => {
-      this.getAvailableMoves(o).forEach(m => {
+      this._available(o).forEach(m => {
         if (m.piece.name === KING)
           checked.push({checked:m,by:o});
       });
@@ -277,7 +277,7 @@ class Chess {
 
   populated(s) { return (Chess.inbounds(s.r, s.f) && this._get(Chess.rankIdx(s.r), FILES[s.f]).piece.isSet()); }
 
-  getAvailableMoves(square) {
+  _available(square) {
     let piece = square.piece.name;
     let color = square.piece.color;
     let [r, f] = [Chess.rankIdx(square.rank), Chess.fileIdx(square.file)];
@@ -375,7 +375,7 @@ class Chess {
 
   // move piece at source square to target square
   _move(source, target) {
-    const available = this.getAvailableMoves(source);
+    const available = this._available(source);
 
     if (available.find(a => (((a.rank) === target.rank) && ((a.file) === target.file)))) {
       const { action, modifiers } = this.actionInfo(source, target);
@@ -428,6 +428,12 @@ class Chess {
   get(opts) {
     const {rank,file} = Chess._split(opts.piece)
     return this._get(rank,file);
+  }
+
+  // return available moves for a specified location
+  available(opts) {
+    const {rank,file} = Chess._split(opts.square);
+    return this._available(this._get(rank, file));
   }
 
   // set a piece down at location
