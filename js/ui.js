@@ -45,9 +45,8 @@ $(document).on('click', '.square', function() {
     square.removeClass('available');
     available.forEach(a => $(`*.square[data-rank="${a.rank}"][data-file="${a.file}"]`).addClass('available') );
   } else {
-    let destination = clicked;
     square.removeClass('available');
-    chess._move(source, destination);
+    chess._move(source, clicked);
     refresh();
     source = null;
   }

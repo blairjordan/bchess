@@ -388,8 +388,8 @@ class Chess {
         const kingSquare = this._get(source.rank + modifiers.source.rankIdx, FILES[Chess.fileIdx(source.file) + modifiers.source.fileIdx]);
         const rookSquare = this._get(target.rank + modifiers.target.rankIdx, FILES[Chess.fileIdx(target.file) + modifiers.target.fileIdx]);
         // assign pieces to squares
-        kingSquare.piece = this._get(source.rank, source.file).piece;
-        rookSquare.piece = this._get(target.rank, target.file).piece;
+        kingSquare.piece = source.piece;
+        rookSquare.piece = target.piece;
         kingSquare.piece.moves++;
         rookSquare.piece.moves++;
         target.piece = new Piece();
