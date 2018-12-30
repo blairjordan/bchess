@@ -381,22 +381,8 @@ class Chess {
   // move piece at source square to target square
   _move(source, target) {
     const available = this._available(source);
-
     if (available.find(a => (((a.rank) === target.rank) && ((a.file) === target.file)))) {
       const { action, modifiers } = this.actionInfo(source, target);
-      switch (action) {
-        case actions.MOVE:
-          break;
-        case actions.CASTLE:
-          break;
-        case actions.PLAYER_CAPTURE_KING:
-          break;
-        case actions.PLAYER_CAPTURE:
-          break;
-        case actions.OPPONENT_CAPTURE:
-          break;
-      }
-
       if (action === actions.CASTLE) {
         // get new locations
         const kingSquare = this._get(source.rank + modifiers.source.rankIdx, FILES[Chess.fileIdx(source.file) + modifiers.source.fileIdx]);

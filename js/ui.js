@@ -47,10 +47,7 @@ $(document).on('click', '.square', function() {
   } else {
     let destination = clicked;
     square.removeClass('available');
-    if ((source.rank === destination.rank) && (source.file === destination.file)) {
-      source = null;
-      return;
-    }
+    chess._move(source, destination);
     refresh();
     source = null;
   }

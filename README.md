@@ -10,7 +10,6 @@ Started off as a codepen, became a mostly complete chess engine.
 
 TODO:
 *(in the order I feel like doing them?)*
- - [ ] rewire UI to use new API and remove index.js
  - [ ] history (easy)
  - [ ] promote pawn (easy)
  - [ ] score tracking (easy)
