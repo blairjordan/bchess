@@ -1,11 +1,10 @@
-let WIDTH = 8;
-let HEIGHT = 8;
+const WIDTH = 8;
+const HEIGHT = 8;
 
 const [ROOK, KNIGHT, BISHOP, QUEEN, KING, PAWN] = ['R', 'N', 'B', 'Q', 'K', 'P'];
 const PIECES = [ROOK, KNIGHT, BISHOP, QUEEN, KING, BISHOP, KNIGHT, ROOK];
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 const [WHITE, BLACK] = ['white', 'black'];
-const [PLAYER_COLOR, OPPONENT_COLOR] = [WHITE, BLACK]
 const directions = {
   CASTLE_KING: 'CASTLE_KING',
   CASTLE_QUEEN: 'CASTLE_QUEEN',
@@ -20,12 +19,13 @@ const directions = {
   L: 'L'
 }
 const actions = {
-  MOVE: 1,
-  PLAYER_CAPTURE: 2,
-  PLAYER_CAPTURE_KING: 4,
-  OPPONENT_CAPTURE: 8,
-  CASTLE: 16,
-  EN_PASSANT: 32
+  MOVE: 'MOVE',
+  PLAYER_CAPTURE: 'CAPTURE',
+  PLAYER_CAPTURE_KING: 'PLAYER_CAPTURE_KING',
+  OPPONENT_CAPTURE: 'OPPONENT_CAPTURE',
+  CASTLE: 'CASTLE',
+  EN_PASSANT: 'EN_PASSANT',
+  INVALID_ACTION: 'INVALID_ACTION'
 }
 
 class Piece {
@@ -57,28 +57,28 @@ class Move {
     if (this.chess._get(Chess.rankIdx(r), FILES[f]).piece.hasMoved())
       [q, k] = [false, false];
 
-    // king side
+    // right side
     for (let i = f + 1; i < WIDTH - 1; i++) {
       if (this.chess._get(Chess.rankIdx(r), FILES[i]).piece.isSet())
         k = false;
     }
-    // queen side
+    // left side
     for (let i = f - 1; i > 0; i--) {
       if (this.chess._get(Chess.rankIdx(r), FILES[i]).piece.isSet())
         q = false;
     }
 
     // where the rooks should be
-    let [krook, qrook] =
+    let [rrook, lrook] =
       [
         this.chess._get(Chess.rankIdx(r), FILES[WIDTH - 1]),
         this.chess._get(Chess.rankIdx(r), FILES[0])
       ];
 
     // rooks moved?
-    if ((krook.piece.name !== ROOK) || (krook.piece.hasMoved()))
+    if ((rrook.piece.name !== ROOK) || (rrook.piece.hasMoved()))
       k = false;
-    if ((qrook.piece.name !== ROOK) || (qrook.piece.hasMoved()))
+    if ((lrook.piece.name !== ROOK) || (lrook.piece.hasMoved()))
       q = false;
 
     if (k)
@@ -166,9 +166,17 @@ class Move {
 }
 
 class Chess {
-  constructor() {
+  constructor(color) {
     this.moveCount = 0;
-    this.board = new Array(HEIGHT).fill().map(
+    this.Moves = new Move(this);
+    [this.my_color, this.their_color] = (color === BLACK) ? [BLACK, WHITE] : [WHITE, BLACK];
+    this.init();
+    this.fill();
+  }
+
+  init() {
+    this.board = 
+      new Array(HEIGHT).fill().map(
       () => new Array(WIDTH).fill().map(
         () => new (function () {
           this.piece = new Piece();
@@ -177,30 +185,29 @@ class Chess {
         })()
       )
     );
-    this.Move = new Move(this);
   }
 
-  piece(rankIdx, colIdx, player, color) {
+  piece(rankIdx, colIdx, color) {
     let name = '';
-    if (((player === 'opponent') && rankIdx === 0) || ((player === 'me' && rankIdx === 7)))
-      name = PIECES[colIdx];
-    if (((player === 'opponent') && rankIdx === 1) || ((player === 'me' && rankIdx === 6)))
+    const pieceIdx = (this.my_color === BLACK && colIdx === 4) ? colIdx-1 : (this.my_color === BLACK && colIdx === 3) ? colIdx+1 : colIdx;
+    if (((color === this.their_color) && rankIdx === 0) || (((color === this.my_color) && rankIdx === 7)))
+      name = PIECES[pieceIdx];
+    if (((color === this.their_color) && rankIdx === 1) || (((color === this.my_color) && rankIdx === 6)))
       name = PAWN;
     return name ? new Piece(name, color) : null;
   };
 
-  init() {
+  fill() {
     this.board.forEach((b, r) => {
       b.forEach((j, f) => {
         const loc = this.board[r][f];
-        loc.piece = this.piece(r, f, 'opponent', OPPONENT_COLOR) || this.piece(r, f, 'me', PLAYER_COLOR) || new Piece();
+        loc.piece = this.piece(r, f, this.their_color) || this.piece(r, f, this.my_color) || new Piece();
         loc.color = (r % 2 === f % 2) ? WHITE : BLACK;
         loc.rank = (r - HEIGHT) * -1;
         loc.file = FILES[f];
       });
     });
   }
-
 
   static rankIdx(rank) { return ((rank) - HEIGHT) * -1; }
   static fileIdx(file) { return FILES.indexOf(file); }
@@ -241,10 +248,10 @@ class Chess {
     return moves;
   }
 
-  // mark return checked positions
-  check() {
+  // return checked positions
+  check(opts = {}) {
     let checked = [];
-    this.find({}).forEach(o => {
+    this.find(opts).forEach(o => {
       this._available(o).forEach(m => {
         if (m.piece.name === KING)
           checked.push({checked:m,by:o});
@@ -259,7 +266,7 @@ class Chess {
       prev += `${Chess.rankIdx(idx)} | `;
       curr.forEach(f => {
         const check = ((f.piece.name === KING) && (this.check().filter(c => (c.checked.rank === f.rank && c.checked.file === f.file)).length > 0)) ? 'X' : '';
-        const name = (f.piece.color === OPPONENT_COLOR) ? check.toLowerCase() || f.piece.name.toLowerCase() : check || f.piece.name;
+        const name = (f.piece.color === this.their_color) ? check.toLowerCase() || f.piece.name.toLowerCase() : check || f.piece.name;
         prev += ` ${name || '.'} `;
       });
       prev += ' | \r\n';
@@ -282,22 +289,22 @@ class Chess {
 
     switch (piece) {
       case PAWN:
-        available = this.Move.pawn(r, f, ((color === PLAYER_COLOR) ? 'n' : 's'));
+        available = this.Moves.pawn(r, f, ((color === this.my_color) ? 'n' : 's'));
         break;
       case ROOK:
-        available = this.Move.straight(r, f);
+        available = this.Moves.straight(r, f);
         break;
       case BISHOP:
-        available = this.Move.diag(r, f);
+        available = this.Moves.diag(r, f);
         break;
       case QUEEN:
-        available = [...this.Move.straight(r, f), ...this.Move.diag(r, f)];
+        available = [...this.Moves.straight(r, f), ...this.Moves.diag(r, f)];
         break;
       case KING:
-        available = [...this.Move.box(r, f), ...this.Move.castle(r, f)];
+        available = [...this.Moves.box(r, f), ...this.Moves.castle(r, f)];
         break;
       case KNIGHT:
-        available = this.Move.L(r, f);
+        available = this.Moves.L(r, f);
         break;
     }
 
@@ -348,16 +355,18 @@ class Chess {
         && (source.piece.name === KING)
         && (target.piece.name === ROOK)) {
         action = actions.CASTLE;
-        if (Chess.fileIdx(source.file) > Chess.fileIdx(target.file)) {
+        const reverse = (this.my_color === BLACK) ? -1 : 1;
+        if ((Chess.fileIdx(source.file) > Chess.fileIdx(target.file) && this.my_color === WHITE)
+         || (Chess.fileIdx(source.file) < Chess.fileIdx(target.file) && this.my_color === BLACK)) {
           // queen side
-          modifiers.source.fileIdx = -2;
-          modifiers.target.fileIdx = 3;
+          modifiers.source.fileIdx = -2 * reverse;
+          modifiers.target.fileIdx = 3 * reverse;
         } else {
           // king side
-          modifiers.source.fileIdx = 2;
-          modifiers.target.fileIdx = -2;
+          modifiers.source.fileIdx = 2 * reverse;
+          modifiers.target.fileIdx = -2 * reverse;
         }
-      } else if (target.piece.color === OPPONENT_COLOR) {
+      } else if (target.piece.color === this.their_color) {
         if (target.piece.name === KING)
           action = actions.PLAYER_CAPTURE_KING;
         else
@@ -404,8 +413,10 @@ class Chess {
         target.piece.moves++;
         source.piece = new Piece();
       }
+      return action;
+
     } else {
-      throw 'Invalid move';
+      return actions.INVALID_ACTION;
     }
   }
 
