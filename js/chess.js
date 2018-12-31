@@ -191,9 +191,8 @@ class Chess {
 
   piece(rankIdx, colIdx, color) {
     let name = '';
-    const pieceIdx = (this.my_color === BLACK && colIdx === 4) ? colIdx-1 : (this.my_color === BLACK && colIdx === 3) ? colIdx+1 : colIdx;
     if (((color === this.their_color) && rankIdx === 0) || (((color === this.my_color) && rankIdx === 7)))
-      name = PIECES[pieceIdx];
+      name = PIECES[colIdx];
     if (((color === this.their_color) && rankIdx === 1) || (((color === this.my_color) && rankIdx === 6)))
       name = PAWN;
     return name ? new Piece(name, color) : null;
@@ -376,16 +375,14 @@ class Chess {
         && (source.piece.name === KING)
         && (target.piece.name === ROOK)) {
         action = actions.CASTLE;
-        const reverse = (this.my_color === BLACK) ? -1 : 1;
-        if ((Chess.fileIdx(source.file) > Chess.fileIdx(target.file) && this.my_color === WHITE)
-         || (Chess.fileIdx(source.file) < Chess.fileIdx(target.file) && this.my_color === BLACK)) {
+        if ((Chess.fileIdx(source.file) > Chess.fileIdx(target.file) && this.my_color === WHITE)) {
           // queen side
-          modifiers.source.fileIdx = -2 * reverse;
-          modifiers.target.fileIdx = 3 * reverse;
+          modifiers.source.fileIdx = -2;
+          modifiers.target.fileIdx = 3;
         } else {
           // king side
-          modifiers.source.fileIdx = 2 * reverse;
-          modifiers.target.fileIdx = -2 * reverse;
+          modifiers.source.fileIdx = 2;
+          modifiers.target.fileIdx = -2;
         }
       } else { 
         this._score({piece: target.piece});
@@ -437,6 +434,16 @@ class Chess {
     const [file, rank] = str.split('');
     return {file, rank};
   }
+  
+  // display board when playing as black
+  reverse() {
+    let reversed = [...this.board].reverse();
+    reversed.forEach((r,idx) => { 
+      let rank = [...r].reverse(); 
+      reversed[idx] = rank;
+    });
+    return reversed;
+  };
 
   // move a piece from location to target
   move(opts) {

@@ -1,22 +1,27 @@
 chess = new Chess();
 const canvas = $(".canvas");
+const player = 'black';
 
 const pieceClass = (name, color) =>
   `${name ? "piece " : ""}${name}${name ? " " + color : ""}`;
 
-chess.board.forEach((b, r) => {
-  let rank = '';
-  b.forEach((j, f) => {
-    const square = chess.board[r][f];
-    rank += `<div class="${square.color} square" data-rank="${square.rank}" data-file="${square.file}"><div class="${pieceClass(square.piece.name,square.piece.color)}" /></div>`;
-  });
-  canvas.append(`<div class="rank">${rank}</div>`);
-});
+const board = (player === 'black') ? chess.reverse() : chess.board;
 
-refresh = () => {
-  chess.board.forEach((b, r) => {
+const build = () => {
+  board.forEach((b, r) => {
+    let rank = '';
     b.forEach((j, f) => {
-      const square = chess.board[r][f];
+      const square = board[r][f];
+      rank += `<div class="${square.color} square" data-rank="${square.rank}" data-file="${square.file}"><div class="${pieceClass(square.piece.name,square.piece.color)}" /></div>`;
+    });
+    canvas.append(`<div class="rank">${rank}</div>`);
+  });
+};
+
+const refresh = () => {
+  board.forEach((b, r) => {
+    b.forEach((j, f) => {
+      const square = board[r][f];
       const elem = $(`*.square[data-rank="${square.rank}"][data-file="${square.file}"]`);
       elem.empty().removeClass('checked');
       elem.append(`<div class="${pieceClass(square.piece.name, square.piece.color)}" /></div>`);
@@ -27,6 +32,8 @@ refresh = () => {
   });
 }
 
+build();
+
 let source = null;
 $(document).on('click', '.square', function() {
   const rank = $(this).data('rank');
@@ -35,7 +42,7 @@ $(document).on('click', '.square', function() {
   const available = chess._available(clicked);
   const elem = $(`*.square[data-rank="${rank}"][data-file="${file}"]`);
   const square = $('.square');
-  
+
   square.removeClass('selected');
   if (source === null) {
 	  if (!clicked.piece.isSet())
