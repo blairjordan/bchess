@@ -1,11 +1,8 @@
 chess = new Chess();
 const canvas = $(".canvas");
-const player = 'black';
+let board = chess.board();
 
-const pieceClass = (name, color) =>
-  `${name ? "piece " : ""}${name}${name ? " " + color : ""}`;
-
-const board = (player === 'black') ? chess.reverse() : chess.board;
+const pieceClass = (name, color) => `${name ? "piece " : ""}${name}${name ? " " + color : ""}`;
 
 const build = () => {
   board.forEach((b, r) => {
@@ -32,8 +29,6 @@ const refresh = () => {
   });
 }
 
-build();
-
 let source = null;
 $(document).on('click', '.square', function() {
   const rank = $(this).data('rank');
@@ -42,7 +37,6 @@ $(document).on('click', '.square', function() {
   const available = chess._available(clicked);
   const elem = $(`*.square[data-rank="${rank}"][data-file="${file}"]`);
   const square = $('.square');
-
   square.removeClass('selected');
   if (source === null) {
 	  if (!clicked.piece.isSet())

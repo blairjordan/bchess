@@ -176,8 +176,12 @@ class Chess {
     this.fill();
   }
 
+  board() {
+    return (this.my_color === BLACK) ? this.reverse() : this._board
+  }
+
   init() {
-    this.board = 
+    this._board = 
       new Array(HEIGHT).fill().map(
       () => new Array(WIDTH).fill().map(
         () => new (function () {
@@ -191,18 +195,18 @@ class Chess {
 
   piece(rankIdx, colIdx, color) {
     let name = '';
-    if (((color === this.their_color) && rankIdx === 0) || (((color === this.my_color) && rankIdx === 7)))
+    if (((color === BLACK) && rankIdx === 0) || (((color === WHITE) && rankIdx === 7)))
       name = PIECES[colIdx];
-    if (((color === this.their_color) && rankIdx === 1) || (((color === this.my_color) && rankIdx === 6)))
+    if (((color === BLACK) && rankIdx === 1) || (((color === WHITE) && rankIdx === 6)))
       name = PAWN;
     return name ? new Piece(name, color) : null;
   };
 
   fill() {
-    this.board.forEach((b, r) => {
+    this._board.forEach((b, r) => {
       b.forEach((j, f) => {
-        const loc = this.board[r][f];
-        loc.piece = this.piece(r, f, this.their_color) || this.piece(r, f, this.my_color) || new Piece();
+        const loc = this._board[r][f];
+        loc.piece = this.piece(r, f, WHITE) || this.piece(r, f, BLACK) || new Piece();
         loc.color = (r % 2 === f % 2) ? WHITE : BLACK;
         loc.rank = (r - HEIGHT) * -1;
         loc.file = FILES[f];
@@ -223,7 +227,7 @@ class Chess {
 
   // return all pieces in a flat array
   flatten() {
-    return this.board.reduce((prev, curr) => {
+    return this._board.reduce((prev, curr) => {
       curr.forEach(f => {
         prev.push(f);
       });
@@ -263,17 +267,16 @@ class Chess {
 
   ascii() {
     const border = '  +--------------------------+\r\n';
-    const board = this.board.reduce((prev, curr, idx) => {
-      prev += `${Chess.rankIdx(idx)} | `;
+    const files = `     ${(this.my_color === WHITE) ? FILES.join('  ') : FILES.slice().reverse().join('  ')}`;
+    const board = this.board().reduce((prev, curr, idx) => {
+      prev += `${(this.my_color === WHITE) ? Chess.rankIdx(idx) : idx+1 } | `;
       curr.forEach(f => {
         const check = ((f.piece.name === KING) && (this.check().filter(c => (c.checked.rank === f.rank && c.checked.file === f.file)).length > 0)) ? 'X' : '';
-        const name = (f.piece.color === this.their_color) ? check.toLowerCase() || f.piece.name.toLowerCase() : check || f.piece.name;
+        const name = (f.piece.color === BLACK) ? check.toLowerCase() || f.piece.name.toLowerCase() : check || f.piece.name;
         prev += ` ${name || '.'} `;
       });
-      prev += ' | \r\n';
-      return prev;
+      return prev += ' | \r\n';
     }, '');
-    const files = `     ${FILES.join('  ')}`;
     return `${border}${board}${border}${files}`;
   }
 
@@ -296,7 +299,7 @@ class Chess {
       this.score.them.push(opts.piece);
   }
 
-  _get(rank, file) { return this.board[Chess.rankIdx(rank)][Chess.fileIdx(file)]; }
+  _get(rank, file) { return this._board[Chess.rankIdx(rank)][Chess.fileIdx(file)]; }
 
   populated(s) { return (Chess.inbounds(s.r, s.f) && this._get(Chess.rankIdx(s.r), FILES[s.f]).piece.isSet()); }
 
@@ -309,7 +312,7 @@ class Chess {
 
     switch (piece) {
       case PAWN:
-        available = this.Moves.pawn(r, f, ((color === this.my_color) ? 'n' : 's'));
+        available = this.Moves.pawn(r, f, ((color === WHITE) ? 'n' : 's'));
         break;
       case ROOK:
         available = this.Moves.straight(r, f);
@@ -375,7 +378,7 @@ class Chess {
         && (source.piece.name === KING)
         && (target.piece.name === ROOK)) {
         action = actions.CASTLE;
-        if ((Chess.fileIdx(source.file) > Chess.fileIdx(target.file) && this.my_color === WHITE)) {
+        if (Chess.fileIdx(source.file) > Chess.fileIdx(target.file)) {
           // queen side
           modifiers.source.fileIdx = -2;
           modifiers.target.fileIdx = 3;
@@ -437,7 +440,7 @@ class Chess {
   
   // display board when playing as black
   reverse() {
-    let reversed = [...this.board].reverse();
+    let reversed = [...this._board].reverse();
     reversed.forEach((r,idx) => { 
       let rank = [...r].reverse(); 
       reversed[idx] = rank;
