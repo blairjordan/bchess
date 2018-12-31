@@ -23,6 +23,7 @@ const actions = {
   PLAYER_CAPTURE: 'CAPTURE',
   PLAYER_CAPTURE_KING: 'PLAYER_CAPTURE_KING',
   OPPONENT_CAPTURE: 'OPPONENT_CAPTURE',
+  OPPONENT_CAPTURE_KING: 'OPPONENT_CAPTURE_KING',
   CASTLE: 'CASTLE',
   EN_PASSANT: 'EN_PASSANT',
   INVALID_ACTION: 'INVALID_ACTION'
@@ -167,9 +168,10 @@ class Move {
 
 class Chess {
   constructor(color) {
-    this.moveCount = 0;
     this.Moves = new Move(this);
     [this.my_color, this.their_color] = (color === BLACK) ? [BLACK, WHITE] : [WHITE, BLACK];
+    this.history = [];
+    this.score = {me: [], them: []};
     this.init();
     this.fill();
   }
@@ -276,6 +278,25 @@ class Chess {
     return `${border}${board}${border}${files}`;
   }
 
+  _log(opts) {
+    const {source, target, action} = opts;
+    const [from, to] = [{rank: source.rank, file: source.file},
+                        {rank: target.rank, file: target.file}];
+    const captured = ([actions.PLAYER_CAPTURE,
+                       actions.PLAYER_CAPTURE_KING,
+                       actions.OPPONENT_CAPTURE,
+                       actions.OPPONENT_CAPTURE_KING]
+      .includes(action)) ? target.piece : null;
+    this.history.push({from, to, piece: source.piece, captured, action});
+  }
+
+  _score(opts) {
+    if (opts.piece.color === this.their_color)
+      this.score.me.push(opts.piece);
+    else
+      this.score.them.push(opts.piece);
+  }
+
   _get(rank, file) { return this.board[Chess.rankIdx(rank)][Chess.fileIdx(file)]; }
 
   populated(s) { return (Chess.inbounds(s.r, s.f) && this._get(Chess.rankIdx(s.r), FILES[s.f]).piece.isSet()); }
@@ -366,13 +387,19 @@ class Chess {
           modifiers.source.fileIdx = 2 * reverse;
           modifiers.target.fileIdx = -2 * reverse;
         }
-      } else if (target.piece.color === this.their_color) {
-        if (target.piece.name === KING)
-          action = actions.PLAYER_CAPTURE_KING;
-        else
-          action = actions.PLAYER_CAPTURE;
-      } else {
-        action = actions.OPPONENT_CAPTURE;
+      } else { 
+        this._score({piece: target.piece});
+        if (target.piece.color === this.their_color) {
+          if (target.piece.name === KING)
+            action = actions.PLAYER_CAPTURE_KING;
+          else
+            action = actions.PLAYER_CAPTURE;
+        } else {
+          if (target.piece.name === KING)
+            action = actions.OPPONENT_CAPTURE_KING;
+          else
+            action = actions.OPPONENT_CAPTURE;
+        }
       }
     }
     return { action, modifiers };
@@ -383,6 +410,7 @@ class Chess {
     const available = this._available(source);
     if (available.find(a => (((a.rank) === target.rank) && ((a.file) === target.file)))) {
       const { action, modifiers } = this.actionInfo(source, target);
+      this._log({source,target,action});
       if (action === actions.CASTLE) {
         // get new locations
         const kingSquare = this._get(source.rank + modifiers.source.rankIdx, FILES[Chess.fileIdx(source.file) + modifiers.source.fileIdx]);
@@ -393,12 +421,11 @@ class Chess {
         kingSquare.piece.moves++;
         rookSquare.piece.moves++;
         target.piece = new Piece();
-        source.piece = new Piece();
       } else {
         target.piece = source.piece;
         target.piece.moves++;
-        source.piece = new Piece();
       }
+      source.piece = new Piece();
       return action;
 
     } else {
@@ -419,7 +446,7 @@ class Chess {
 
   // return location info
   get(opts) {
-    const {rank,file} = Chess._split(opts.piece)
+    const {rank,file} = Chess._split(opts.square)
     return this._get(rank,file);
   }
 
