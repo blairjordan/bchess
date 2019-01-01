@@ -29,7 +29,7 @@ Get the current game history.
 
     chess.history
     
-### ascii()
+### ascii
 
 Returns an ascii string of the board.
 
@@ -52,14 +52,26 @@ Example output:
 ### score
 
 Get the current game score.
-         
+
     chess.score
 
-### score
+### get
 
 Fetch the information at a current square
-        
+
     chess.get({square:'g8'});
+
+### get
+
+Fetch the information at a current square
+
+    chess.get({square:'g8'});
+
+### fen
+
+Returns the board in [FEN](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation) notation.
+
+    chess.fen()
 
 TODO:
 

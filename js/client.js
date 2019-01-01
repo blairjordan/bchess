@@ -5,6 +5,7 @@ listenSquareClick((res) => {
     const {from, to} = res;
     socket.emit('move', {id, move: {from, to}});
 });
+
 socket.on('connect', function() {
         clear();
         build();

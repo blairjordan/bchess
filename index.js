@@ -16,3 +16,4 @@ console.log(chess.history); // history
 console.log(chess.ascii()); // ascii board
 console.log(chess.score);   // game score
 console.log(chess.get({square:'g8'})); // get square
+console.log(chess.fen());
