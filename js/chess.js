@@ -438,7 +438,7 @@ class Chess {
     return {file, rank};
   }
   
-  // display board when playing as black
+  // display board from black perspective
   reverse() {
     let reversed = [...this._board].reverse();
     reversed.forEach((r,idx) => { 
