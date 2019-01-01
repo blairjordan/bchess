@@ -1,18 +1,17 @@
 const socket = io.connect('http://127.0.0.1:3001');
+const id = Math.floor(100000 + Math.random() * 900000);
 
+listenSquareClick((res) => {
+    const {from, to} = res;
+    socket.emit('move', {id, move: {from, to}});
+});
 socket.on('connect', function() {
+        clear();
         build();
-        listenSquareClick((action) => {
 
-            socket.emit('move', function (data) {
-                //
-            });
-        });
-
-      socket.on('move', function (data) {
-            chess.move(data);
+        socket.on('move', function (data) {
+            const {from, to} = data.move;
+            chess.move({from, to});
             refresh();
         });
 });
-
-// socket.emit('move',{message:'test asdasdas'});

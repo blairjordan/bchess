@@ -4,6 +4,10 @@ let board = chess.board();
 
 const pieceClass = (name, color) => `${name ? "piece " : ""}${name}${name ? " " + color : ""}`;
 
+const clear = () => {
+  canvas.empty();
+}
+
 const build = () => {
   board.forEach((b, r) => {
     let rank = '';
@@ -49,7 +53,8 @@ let listenSquareClick = (cb) => {
       available.forEach(a => $(`*.square[data-rank="${a.rank}"][data-file="${a.file}"]`).addClass('available') );
     } else {
       square.removeClass('available');
-      cb(chess._move(source, clicked));
+      const [from, to] = [`${source.file}${source.rank}`,`${clicked.file}${clicked.rank}`];
+      cb({from, to, action: chess.move({from, to})});
       refresh();
       source = null;
     }

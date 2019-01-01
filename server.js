@@ -4,9 +4,9 @@ const chess = new Chess();
 
 io.on('connect', function(socket){
     console.log('a user connected');
-    socket.emit('move', {from: 'a2', to: 'a4'});
-    socket.on('move', function(move){
-        chess.move(move);
-      });
+    socket.on('move', function(data){
+        const {id, move} = data;
+        const {from, to} = move;
+        socket.broadcast.emit('move',{id, move: {from, to}});
+    });
 });
-  
