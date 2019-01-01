@@ -235,7 +235,7 @@ class Chess {
     }, []);
   }
 
-  // find pieces using search criteria
+  // find pieces using search criteria or all pieces
   find(opts) {
     const { name, color } = opts;
     return this.flatten().filter(f => (
@@ -265,15 +265,30 @@ class Chess {
     return checked;
   }
 
+  fen() {
+    return this.board().reduce((prev, curr, idx) => {
+      let rank = '';
+      let blanks = 0;
+      curr.forEach((f,i) => {
+        if (!f.piece.isSet())
+          blanks++;
+        else
+          blanks = 0;
+        rank += `${(blanks && ((i === WIDTH-1) || curr[i+1].piece.isSet())) ? blanks : ''}${(f.piece.color === BLACK) ? f.piece.name.toLowerCase() : f.piece.name}`;
+      });
+      prev.push(rank);
+      return prev;
+    }, [])
+    .join('/');
+  }
+
   ascii() {
     const border = '  +--------------------------+\r\n';
     const files = `     ${(this.my_color === WHITE) ? FILES.join('  ') : FILES.slice().reverse().join('  ')}`;
     const board = this.board().reduce((prev, curr, idx) => {
       prev += `${(this.my_color === WHITE) ? Chess.rankIdx(idx) : idx+1 } | `;
       curr.forEach(f => {
-        const check = ((f.piece.name === KING) && (this.check().filter(c => (c.checked.rank === f.rank && c.checked.file === f.file)).length > 0)) ? 'X' : '';
-        const name = (f.piece.color === BLACK) ? check.toLowerCase() || f.piece.name.toLowerCase() : check || f.piece.name;
-        prev += ` ${name || '.'} `;
+        prev += ` ${(f.piece.color === BLACK) ? f.piece.name.toLowerCase() : f.piece.name || '.'} `;
       });
       return prev += ' | \r\n';
     }, '');
