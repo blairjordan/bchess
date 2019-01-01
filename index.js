@@ -1,6 +1,7 @@
 const { Chess, Piece } = require('./js/chess');
 
 const chess = new Chess();
+
 // make a bunch of moves
 chess.move({from:'c2',to:'c4'});
 chess.move({from:'b2',to:'b4'});
@@ -16,4 +17,4 @@ console.log(chess.history); // history
 console.log(chess.ascii()); // ascii board
 console.log(chess.score);   // game score
 console.log(chess.get({square:'g8'})); // get square
-console.log(chess.fen());
+console.log(chess.fen()); // fen output

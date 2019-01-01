@@ -1,7 +1,7 @@
 const socket = io.connect('http://127.0.0.1:3001');
 const id = Math.floor(100000 + Math.random() * 900000);
 
-listenSquareClick((res) => {
+listen('click', (res) => {
     const {from, to} = res;
     socket.emit('move', {id, move: {from, to}});
 });
