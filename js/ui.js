@@ -37,30 +37,40 @@ let source = null;
 
 let listen = (event, cb) => {
   switch (event) {
-    case 'click':
-    $(document).on('click', '.square', function() {
-      const rank = $(this).data('rank');
-      const file = $(this).data('file');
-      const clicked = chess._get(rank,file);
-      const available = chess._available(clicked);
-      const elem = $(`*.square[data-rank="${rank}"][data-file="${file}"]`);
-      const square = $('.square');
-      square.removeClass('selected');
-      if (source === null) {
-        if (!clicked.piece.isSet())
-          return;
-        source = clicked;
-        elem.addClass('selected');
-        square.removeClass('available');
-        available.forEach(a => $(`*.square[data-rank="${a.rank}"][data-file="${a.file}"]`).addClass('available') );
-      } else {
-        square.removeClass('available');
-        const [from, to] = [`${source.file}${source.rank}`,`${clicked.file}${clicked.rank}`];
-        cb({from, to, action: chess.move({from, to})});
-        refresh();
-        source = null;
-      }
-    });
-    break;
+    case 'square-click':
+      $(document).on('click', '.square', function() {
+        const rank = $(this).data('rank');
+        const file = $(this).data('file');
+        const clicked = chess._get(rank,file);
+        const available = chess._available(clicked);
+        const elem = $(`*.square[data-rank="${rank}"][data-file="${file}"]`);
+        const square = $('.square');
+        square.removeClass('selected');
+        if (source === null) {
+          if (!clicked.piece.isSet())
+            return;
+          source = clicked;
+          elem.addClass('selected');
+          square.removeClass('available');
+          available.forEach(a => $(`*.square[data-rank="${a.rank}"][data-file="${a.file}"]`).addClass('available') );
+        } else {
+          square.removeClass('available');
+          const [from, to] = [`${source.file}${source.rank}`,`${clicked.file}${clicked.rank}`];
+          cb({from, to, action: chess.move({from, to})});
+          refresh();
+          source = null;
+        }
+      });
+      break;
+    case 'side-selected':
+      $(document).on('click', '.side', function(event) {
+        if (event.target.dataset.side === 'black') {
+          chess.my_color = 'black';
+          board = chess.reverse();
+        }
+        $('.setup').remove();
+        cb();
+      });
+      break;
   }
 }

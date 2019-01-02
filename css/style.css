@@ -78,3 +78,6 @@
 .B.white {  background-position: -240px -60px; }
 .P {  background-position: -300px 0px; }
 .P.white {  background-position: -300px -60px; }
+
+#side-white { background-color: #fff; color: #000; }
+#side-black { background-color: #000; color: #fff; }
