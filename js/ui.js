@@ -1,6 +1,9 @@
 chess = new Chess();
 const canvas = $(".canvas");
 let board = chess.board();
+let myturn = true;
+let enforce_turns = true;
+let enforce_color = true;
 
 const pieceClass = (name, color) => `${name ? "piece " : ""}${name}${name ? " " + color : ""}`;
 
@@ -35,10 +38,12 @@ const refresh = () => {
 
 let source = null;
 
-let listen = (event, cb) => {
+const listen = (event, cb) => {
   switch (event) {
     case 'square-click':
       $(document).on('click', '.square', function() {
+        if (enforce_turns && !myturn)
+            return false;
         const rank = $(this).data('rank');
         const file = $(this).data('file');
         const clicked = chess._get(rank,file);
@@ -47,7 +52,7 @@ let listen = (event, cb) => {
         const square = $('.square');
         square.removeClass('selected');
         if (source === null) {
-          if (!clicked.piece.isSet())
+          if (!clicked.piece.isSet() || (enforce_color && (clicked.piece.color !== chess.my_color)))
             return;
           source = clicked;
           elem.addClass('selected');
@@ -56,17 +61,22 @@ let listen = (event, cb) => {
         } else {
           square.removeClass('available');
           const [from, to] = [`${source.file}${source.rank}`,`${clicked.file}${clicked.rank}`];
-          cb({from, to, action: chess.move({from, to})});
-          refresh();
+          const action = chess.move({from, to});
+          if (action !== 'INVALID_ACTION') {
+            cb({from, to, action});
+            myturn = false;
+            refresh();
+          }
           source = null;
         }
       });
       break;
     case 'side-selected':
       $(document).on('click', '.side', function(event) {
-        if (event.target.dataset.side === 'black') {
-          chess.my_color = 'black';
+        if (event.target.dataset.side === BLACK) {
+          chess.my_color = BLACK;
           board = chess.reverse();
+          myturn = false;
         }
         $('.setup').remove();
         cb();
@@ -74,3 +84,6 @@ let listen = (event, cb) => {
       break;
   }
 }
+
+const toggleSetup = () => $('.setup').toggle();
+const toggleStatus = () => $('.status').toggle();

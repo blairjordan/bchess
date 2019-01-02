@@ -466,7 +466,7 @@ class Chess {
   // move a piece from location to target
   move(opts) {
     const [from, to] = [Chess._split(opts.from), Chess._split(opts.to)];
-    this._move(this._get(from.rank, from.file), this._get(to.rank, to.file));
+    return this._move(this._get(from.rank, from.file), this._get(to.rank, to.file));
   }
 
   // return location info
