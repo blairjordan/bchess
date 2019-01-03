@@ -79,8 +79,8 @@ TODO:
 
 - [ ] promote pawn (easy)
 - [ ] finish castling rules (prevent castling out of, through, and into check) (medium)
-- [ ] en passant (easy-medium)
 - [ ] improved algebraic notation (hard)
-- [ ] threefold repetition finish (easy)
+- [ ] threefold repetition finish (medium)
 - [ ] stalemate (easy)
 - [ ] insufficient material (easy)
+- [ ] 50 move rule

@@ -5,7 +5,6 @@ const [ROOK, KNIGHT, BISHOP, QUEEN, KING, PAWN] = ['R', 'N', 'B', 'Q', 'K', 'P']
 const PIECES = [ROOK, KNIGHT, BISHOP, QUEEN, KING, BISHOP, KNIGHT, ROOK];
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 const [WHITE, BLACK] = ['white', 'black'];
-const [NORTH, SOUTH] = ['north', 'south'];
 const directions = {
   CASTLE_KING: 'CASTLE_KING',
   CASTLE_QUEEN: 'CASTLE_QUEEN',
@@ -91,10 +90,10 @@ class Move {
     return moves;
   }
 
-  pawn(r, f, d) {
+  pawn(r, f, c) {
     let moves = [];
-    const op = (d === NORTH) ? '-' : '+';
-    const first = ((d === NORTH && r === HEIGHT - 2) || (d === SOUTH && r === 1));
+    const op = (c === WHITE) ? '-' : '+';
+    const first = ((c === WHITE && r === HEIGHT - 2) || (c === BLACK && r === 1));
 
     const left = { r: eval(`r${op}1`), f: f - 1, p: directions.LEFT };
     const right = { r: eval(`r${op}1`), f: f + 1, p: directions.RIGHT };
@@ -111,23 +110,39 @@ class Move {
     return moves;
   }
 
-  en_passant(r, f, d) {
+  en_passant(r, f, c) {
     let moves = [];
-    const op = (d === NORTH) ? '-' : '+';
-    const available = ((d === NORTH && r === 3) || (d === SOUTH && r === HEIGHT-4));
+    const op = (c === WHITE) ? '-' : '+';
 
-    if (available) {
-      const left = { r, f: f - 1, p: directions.LEFT };
-      const right = { r, f: f - 1, p: directions.RIGHT };
-      const dleft = { r: eval(`r${op}1`), f: f - 1, p: directions.UP_LEFT };
-      const dright = { r: eval(`r${op}1`), f: f + 1, p: directions.UP_RIGHT };
+    if (this.chess.history.length === 0)
+      return [];
 
-      if (!this.chess.populated(left))
-        Chess.add(moves, dleft);
+    // check current rank
+    if (!((c === WHITE && r === 3) || (c === BLACK && r === HEIGHT-4)))
+      return [];
 
-      if (!this.chess.populated(right))
-      Chess.add(moves, dright);
-    }
+    const left = { r, f: f - 1, p: directions.LEFT };
+    const right = { r, f: f + 1, p: directions.RIGHT };
+    const upLeft = { r: eval(`r${op}1`), f: f - 1, p: directions.UP_LEFT };
+    const upLight = { r: eval(`r${op}1`), f: f + 1, p: directions.UP_RIGHT };
+    const latestMove = this.chess.history[this.chess.history.length - 1];
+
+    // latest move was opponent moving a pawn
+    if (latestMove.piece.name !== PAWN || latestMove.piece.color === c)
+      return [];
+
+    const [latestMoveFromRankIdx, latestMoveFromFileIdx] = [Chess.rankIdx(latestMove.from.rank), FILES.indexOf(latestMove.from.file)];
+    const [latestMoveToRankIdx, latestMoveToFileIdx] = [Chess.rankIdx(latestMove.to.rank), FILES.indexOf(latestMove.to.file)];
+
+    if ((latestMoveFromFileIdx !== latestMoveToFileIdx) // moved straight ahead
+      || (latestMoveFromRankIdx !== eval(`latestMoveToRankIdx${op}2`))) // moved two squares
+      return [];
+
+    if (latestMoveToFileIdx === left.f)
+      Chess.add(moves, upLeft);
+    if (latestMoveToFileIdx === right.f)
+      Chess.add(moves, upLight);
+    
     return moves;
   }
 
@@ -342,11 +357,10 @@ class Chess {
     let [r, f] = [Chess.rankIdx(square.rank), Chess.fileIdx(square.file)];
 
     let available = [];
-    let direction = ((color === WHITE) ? NORTH : SOUTH);
 
     switch (piece) {
       case PAWN:
-        available = [...this.Moves.pawn(r, f, direction), ...this.Moves.en_passant(r, f, direction)];
+        available = [...this.Moves.pawn(r, f, color), ...this.Moves.en_passant(r, f, color)];
         break;
       case ROOK:
         available = this.Moves.straight(r, f);
@@ -407,6 +421,7 @@ class Chess {
       source: { rankIdx: 0, fileIdx: 0 },
       target: { rankIdx: 0, fileIdx: 0 }
     };
+    let capture = null;
     if (target.piece.isSet()) {
       if ((source.piece.color === target.piece.color)
         && (source.piece.name === KING)
@@ -435,15 +450,21 @@ class Chess {
             action = actions.OPPONENT_CAPTURE;
         }
       }
-    }
-    return { action, modifiers };
+    } else if (source.piece.name === PAWN && Chess.fileIdx(source.file) !== Chess.fileIdx(target.file)) {
+        // moved diagonal into an empty square
+        action = actions.EN_PASSANT;
+        const c = this._get(target.rank+((source.piece.color === WHITE) ? -1 : 1), target.file);
+        this._score({piece: c.piece});
+        capture = c;
+      }
+    return { action, modifiers, capture };
   }
 
   // move piece at source square to target square
   _move(source, target) {
     const available = this._available(source);
     if (available.find(a => (((a.rank) === target.rank) && ((a.file) === target.file)))) {
-      const { action, modifiers } = this.actionInfo(source, target);
+      const { action, modifiers, capture } = this.actionInfo(source, target);
       this._log({source,target,action});
       if (action === actions.CASTLE) {
         // get new locations
@@ -456,12 +477,14 @@ class Chess {
         rookSquare.piece.moves++;
         target.piece = new Piece();
       } else {
+        if (action === actions.EN_PASSANT) {
+          capture.piece = new Piece();
+        }
         target.piece = source.piece;
         target.piece.moves++;
       }
       source.piece = new Piece();
       return action;
-
     } else {
       return actions.INVALID_ACTION;
     }
