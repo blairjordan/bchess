@@ -210,6 +210,7 @@ class Chess {
     this.score = {white: [], black: []};
     this.init();
     this.fill();
+    this.moves = 0;
   }
 
   board() {
@@ -415,7 +416,7 @@ class Chess {
   }
 
   // return action type and position modifiers
-  actionInfo(source, target) {
+  _action(source, target) {
     let action = actions.MOVE;
     let modifiers = {
       source: { rankIdx: 0, fileIdx: 0 },
@@ -464,7 +465,7 @@ class Chess {
   _move(source, target) {
     const available = this._available(source);
     if (available.find(a => (((a.rank) === target.rank) && ((a.file) === target.file)))) {
-      const { action, modifiers, capture } = this.actionInfo(source, target);
+      const { action, modifiers, capture } = this._action(source, target);
       this._log({source,target,action});
       if (action === actions.CASTLE) {
         // get new locations
@@ -484,6 +485,7 @@ class Chess {
         target.piece.moves++;
       }
       source.piece = new Piece();
+      this.moves++;
       return action;
     } else {
       return actions.INVALID_ACTION;
