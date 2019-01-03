@@ -171,7 +171,7 @@ class Chess {
     this.Moves = new Move(this);
     [this.my_color, this.their_color] = (color === BLACK) ? [BLACK, WHITE] : [WHITE, BLACK];
     this.history = [];
-    this.score = {me: [], them: []};
+    this.score = {white: [], black: []};
     this.init();
     this.fill();
   }
@@ -308,10 +308,7 @@ class Chess {
   }
 
   _score(opts) {
-    if (opts.piece.color === this.their_color)
-      this.score.me.push(opts.piece);
-    else
-      this.score.them.push(opts.piece);
+    this.score[opts.piece.color].push(opts.piece);
   }
 
   _get(rank, file) { return this._board[Chess.rankIdx(rank)][Chess.fileIdx(file)]; }

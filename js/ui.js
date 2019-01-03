@@ -22,6 +22,20 @@ const build = () => {
   });
 };
 
+const refreshScore = () => {
+  let theirScore = (chess.my_color === WHITE) ? chess.score.white : chess.score.black;
+  let myScore = (chess.my_color === WHITE) ? chess.score.black : chess.score.white;
+  
+  $('.score > .player').empty();
+  $('.score > .opponent').empty();
+  myScore.forEach(s => {
+    $('.score > .player').append(`<div class="${pieceClass(s.name, s.color)}" /></div>`);
+  });
+  theirScore.forEach(s => {
+    $('.score > .opponent').append(`<div class="${pieceClass(s.name, s.color)}" /></div>`);
+  });
+}
+
 const refresh = () => {
   board.forEach((b, r) => {
     b.forEach((j, f) => {
@@ -34,6 +48,7 @@ const refresh = () => {
   chess.check({}).forEach(c => {
     $(`*.square[data-rank="${c.checked.rank}"][data-file="${c.checked.file}"]`).addClass('checked');
   });
+  refreshScore();
 }
 
 let source = null;
