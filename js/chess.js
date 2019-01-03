@@ -5,6 +5,7 @@ const [ROOK, KNIGHT, BISHOP, QUEEN, KING, PAWN] = ['R', 'N', 'B', 'Q', 'K', 'P']
 const PIECES = [ROOK, KNIGHT, BISHOP, QUEEN, KING, BISHOP, KNIGHT, ROOK];
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 const [WHITE, BLACK] = ['white', 'black'];
+const [NORTH, SOUTH] = ['north', 'south'];
 const directions = {
   CASTLE_KING: 'CASTLE_KING',
   CASTLE_QUEEN: 'CASTLE_QUEEN',
@@ -92,8 +93,8 @@ class Move {
 
   pawn(r, f, d) {
     let moves = [];
-    const op = (d === 'n') ? '-' : '+';
-    const first = ((d === 'n' && r === HEIGHT - 2) || (d === 's' && r === 1));
+    const op = (d === NORTH) ? '-' : '+';
+    const first = ((d === NORTH && r === HEIGHT - 2) || (d === SOUTH && r === 1));
 
     const left = { r: eval(`r${op}1`), f: f - 1, p: directions.LEFT };
     const right = { r: eval(`r${op}1`), f: f + 1, p: directions.RIGHT };
@@ -106,6 +107,26 @@ class Move {
       Chess.add(moves, front1);
       if (first && !this.chess.populated(front2))
         Chess.add(moves, front2);
+    }
+    return moves;
+  }
+
+  en_passant(r, f, d) {
+    let moves = [];
+    const op = (d === NORTH) ? '-' : '+';
+    const available = ((d === NORTH && r === 3) || (d === SOUTH && r === HEIGHT-4));
+
+    if (available) {
+      const left = { r, f: f - 1, p: directions.LEFT };
+      const right = { r, f: f - 1, p: directions.RIGHT };
+      const dleft = { r: eval(`r${op}1`), f: f - 1, p: directions.UP_LEFT };
+      const dright = { r: eval(`r${op}1`), f: f + 1, p: directions.UP_RIGHT };
+
+      if (!this.chess.populated(left))
+        Chess.add(moves, dleft);
+
+      if (!this.chess.populated(right))
+      Chess.add(moves, dright);
     }
     return moves;
   }
@@ -321,10 +342,11 @@ class Chess {
     let [r, f] = [Chess.rankIdx(square.rank), Chess.fileIdx(square.file)];
 
     let available = [];
+    let direction = ((color === WHITE) ? NORTH : SOUTH);
 
     switch (piece) {
       case PAWN:
-        available = this.Moves.pawn(r, f, ((color === WHITE) ? 'n' : 's'));
+        available = [...this.Moves.pawn(r, f, direction), ...this.Moves.en_passant(r, f, direction)];
         break;
       case ROOK:
         available = this.Moves.straight(r, f);
