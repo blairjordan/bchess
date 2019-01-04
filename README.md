@@ -73,6 +73,12 @@ Returns the board in [FEN](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards
 
     chess.fen()
 
+### move
+
+Return the total move counts (completed turns)
+
+    chess.moves
+
 TODO:
 
 *(in the order I feel like doing them?)*
