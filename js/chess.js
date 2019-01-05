@@ -44,14 +44,15 @@ const directions = {
   L: 'L'
 }
 const actions = {
-  MOVE: 'MOVE',
-  PLAYER_CAPTURE: 'CAPTURE',
-  PLAYER_CAPTURE_KING: 'PLAYER_CAPTURE_KING',
-  OPPONENT_CAPTURE: 'OPPONENT_CAPTURE',
-  OPPONENT_CAPTURE_KING: 'OPPONENT_CAPTURE_KING',
-  CASTLE: 'CASTLE',
-  EN_PASSANT: 'EN_PASSANT',
-  INVALID_ACTION: 'INVALID_ACTION'
+  MOVE: 1,
+  PLAYER_CAPTURE: 2,
+  PLAYER_CAPTURE_KING: 4,
+  OPPONENT_CAPTURE: 8,
+  OPPONENT_CAPTURE_KING: 16,
+  CASTLE: 32,
+  EN_PASSANT: 64,
+  PROMOTE: 128,
+  INVALID_ACTION: 256
 }
 
 class Piece {
@@ -59,6 +60,7 @@ class Piece {
     this.name = name || '';
     this.color = color || '';
     this.moves = moves || 0;
+    this.isPromoted = false;
   }
 
   isSet() {
@@ -462,7 +464,7 @@ class Chess {
           modifiers.source.fileIdx = 2;
           modifiers.target.fileIdx = -2;
         }
-      } else { 
+      } else {
         this._score({piece: target.piece});
         if (target.piece.color === this.their_color) {
           if (target.piece.name === KING)
@@ -477,17 +479,24 @@ class Chess {
         }
       }
     } else if (source.piece.name === PAWN && Chess.fileIdx(source.file) !== Chess.fileIdx(target.file)) {
-        // moved diagonal into an empty square
-        action = actions.EN_PASSANT;
-        const c = this._get(target.rank+((source.piece.color === WHITE) ? -1 : 1), target.file);
-        this._score({piece: c.piece});
-        capture = c;
-      }
+      // moved diagonal into an empty square, en passant
+      action = actions.EN_PASSANT;
+      const c = this._get(target.rank+((source.piece.color === WHITE) ? -1 : 1), target.file);
+      this._score({piece: c.piece});
+      capture = c;
+    }
+
+    // check pawn promotion
+    if ( source.piece.name === PAWN &&  
+          (target.rank === 8 && source.piece.color === WHITE)
+        || (target.rank === 1 && source.piece.color === BLACK) )
+      action |= actions.PROMOTE;
+    
     return { action, modifiers, capture };
   }
 
   // move piece at source square to target square
-  _move(source, target) {
+  _move(source, target, promote = null) {
     const available = this._available(source);
     if (available.find(a => (((a.rank) === target.rank) && ((a.file) === target.file)))) {
       const { action, modifiers, capture } = this._action(source, target);
@@ -505,6 +514,10 @@ class Chess {
       } else {
         if (action === actions.EN_PASSANT) {
           capture.piece = new Piece();
+        }
+        if ((action & actions.PROMOTE) === actions.PROMOTE) {
+          source.piece.name = ([QUEEN,KNIGHT,ROOK,BISHOP].includes(promote)) ? promote : QUEEN;
+          source.piece.isPromoted = true;
         }
         target.piece = source.piece;
         target.piece.moves++;
@@ -535,7 +548,7 @@ class Chess {
   // move a piece from location to target
   move(opts) {
     const [from, to] = [Chess._split(opts.from), Chess._split(opts.to)];
-    return this._move(this._get(from.rank, from.file), this._get(to.rank, to.file));
+    return this._move(this._get(from.rank, from.file), this._get(to.rank, to.file), opts.promote);
   }
 
   // return location info

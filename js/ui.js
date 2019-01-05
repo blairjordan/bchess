@@ -76,7 +76,7 @@ const listen = (event, cb) => {
         } else {
           square.removeClass('available');
           const [from, to] = [`${source.file}${source.rank}`,`${clicked.file}${clicked.rank}`];
-          const action = chess.move({from, to});
+          const action = chess.move({from, to, promote: 'Q'});
           if (action !== 'INVALID_ACTION') {
             cb({from, to, action});
             myturn = false;

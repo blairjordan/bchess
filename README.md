@@ -18,6 +18,10 @@ Carry out the specified move.
 
     chess.move({from:'c2',to:'c4'});
 
+A third option is available to specify a the piece used for promotion (if available):
+
+    chess.move({from:'c2',to:'c4',promote:'Q});
+
 ### set
 Arbitrarily set a piece down on the board:
 
@@ -87,7 +91,7 @@ TODO:
 
 *(in the order I feel like doing them?)*
 
-- [ ] promote pawn (easy)
+- [ ] turn tracking (easy)
 - [ ] finish castling rules (prevent castling out of, through, and into check) (medium)
 - [ ] improved algebraic notation (hard)
 - [ ] threefold repetition finish (medium)
