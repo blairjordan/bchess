@@ -37,21 +37,21 @@ Get the current game history.
 
 Returns an ascii string of the board.
 
-    chess.ascii()
+    chess.ascii({unicode:true})
 
 Example output:
 
-      +--------------------------+
-    8 |  .  r  b  q  k  b  n  r  |
-    7 |  .  p  p  p  p  p  p  p  |
+    +--------------------------+
+    8 |  ♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜  |
+    7 |  ♟  ♟  ♟  ♟  ♟  .  ♟  ♟  |
     6 |  .  .  .  .  .  .  .  .  |
-    5 |  .  .  .  .  .  .  .  .  |
-    4 |  .  P  P  .  .  .  .  Q  |
-    3 |  B  .  N  .  .  .  .  .  |
-    2 |  P  .  .  P  P  P  P  P  |
-    1 |  .  .  K  R  .  B  N  R  |
-      +--------------------------+
-         a  b  c  d  e  f  g  h
+    5 |  .  ♕  .  .  .  ♟  .  .  |
+    4 |  .  .  .  .  .  .  .  .  |
+    3 |  .  .  .  .  .  .  .  .  |
+    2 |  ♙  ♙  ♙  ♙  ♙  ♙  ♙  ♙  |
+    1 |  ♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖  |
+    +--------------------------+
+        a  b  c  d  e  f  g  h
 
 ### score
 

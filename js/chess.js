@@ -27,7 +27,16 @@ const WIDTH = 8;
 const HEIGHT = 8;
 
 const [ROOK, KNIGHT, BISHOP, QUEEN, KING, PAWN] = ['R', 'N', 'B', 'Q', 'K', 'P'];
-const PIECES = [ROOK, KNIGHT, BISHOP, QUEEN, KING, BISHOP, KNIGHT, ROOK];
+const UNICODE =
+{
+  P: { black: String.fromCodePoint(0x265F), white: String.fromCodePoint(0x2659) },
+  R: { black: String.fromCodePoint(0x265C), white: String.fromCodePoint(0x2656) }, 
+  N: { black: String.fromCodePoint(0x265E), white: String.fromCodePoint(0x2658) }, 
+  B: { black: String.fromCodePoint(0x265D), white: String.fromCodePoint(0x2657) }, 
+  Q: { black: String.fromCodePoint(0x265B), white: String.fromCodePoint(0x2655) },  
+  K: { black: String.fromCodePoint(0x265A), white: String.fromCodePoint(0x2654) }
+};
+const FIRST_RANK = [ROOK, KNIGHT, BISHOP, QUEEN, KING, BISHOP, KNIGHT, ROOK];
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 const [WHITE, BLACK] = ['white', 'black'];
 const directions = {
@@ -58,7 +67,7 @@ const actions = {
 class Piece {
   constructor(name, color, moves) {
     this.name = name || '';
-    this.color = color || '';
+    this.color = color || WHITE;
     this.moves = moves || 0;
     this.isPromoted = false;
   }
@@ -260,7 +269,7 @@ class Chess {
   piece(rankIdx, colIdx, color) {
     let name = '';
     if (((color === BLACK) && rankIdx === 0) || (((color === WHITE) && rankIdx === 7)))
-      name = PIECES[colIdx];
+      name = FIRST_RANK[colIdx];
     if (((color === BLACK) && rankIdx === 1) || (((color === WHITE) && rankIdx === 6)))
       name = PAWN;
     return name ? new Piece(name, color) : null;
@@ -346,13 +355,15 @@ class Chess {
     .join('/');
   }
 
-  ascii() {
+  ascii(opts) {
+    const { unicode } = opts;
     const border = '  +--------------------------+\r\n';
     const files = `     ${(this.my_color === WHITE) ? FILES.join('  ') : FILES.slice().reverse().join('  ')}`;
     const board = this.board().reduce((prev, curr, idx) => {
       prev += `${(this.my_color === WHITE) ? Chess.rankIdx(idx) : idx+1 } | `;
       curr.forEach(f => {
-        prev += ` ${(f.piece.color === BLACK) ? f.piece.name.toLowerCase() : f.piece.name || '.'} `;
+        const symbol = (unicode && f.piece.isSet()) ? `${UNICODE[f.piece.name][f.piece.color]}` : f.piece.name;
+        prev += ` ${(f.piece.color === BLACK) ? symbol.toLowerCase() : symbol || '.'} `;
       });
       return prev += ' | \r\n';
     }, '');

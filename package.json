@@ -1,0 +1,29 @@
+{
+  "name": "chess.js",
+  "version": "1.0.0",
+  "description": "Yet another chess engine.",
+  "main": "index.js",
+  "dependencies": {
+  "socket.io": "^2.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+  "test": "echo \"Error: no test specified\" && exit 1",
+  "start": "node server.js"
+  },
+  "repository": {
+  "type": "git",
+  "url": "git+https://github.com/blairjordan/chess.js.git"
+  },
+  "keywords": [
+  "chess",
+  "board",
+  "game"
+  ],
+  "author": "B. Jordan",
+  "license": "BSD-2-Clause",
+  "bugs": {
+  "url": "https://github.com/blairjordan/chess.js/issues"
+  },
+  "homepage": "https://github.com/blairjordan/chess.js#readme"
+  }
