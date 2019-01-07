@@ -27,15 +27,6 @@ const WIDTH = 8;
 const HEIGHT = 8;
 
 const [ROOK, KNIGHT, BISHOP, QUEEN, KING, PAWN] = ['R', 'N', 'B', 'Q', 'K', 'P'];
-const UNICODE =
-{
-  P: { black: String.fromCodePoint(0x265F), white: String.fromCodePoint(0x2659) },
-  R: { black: String.fromCodePoint(0x265C), white: String.fromCodePoint(0x2656) }, 
-  N: { black: String.fromCodePoint(0x265E), white: String.fromCodePoint(0x2658) }, 
-  B: { black: String.fromCodePoint(0x265D), white: String.fromCodePoint(0x2657) }, 
-  Q: { black: String.fromCodePoint(0x265B), white: String.fromCodePoint(0x2655) },  
-  K: { black: String.fromCodePoint(0x265A), white: String.fromCodePoint(0x2654) }
-};
 const FIRST_RANK = [ROOK, KNIGHT, BISHOP, QUEEN, KING, BISHOP, KNIGHT, ROOK];
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 const [WHITE, BLACK] = ['white', 'black'];
@@ -63,6 +54,15 @@ const actions = {
   PROMOTE: 128,
   INVALID_ACTION: 256
 }
+const UNICODE =
+{
+  P: { black: String.fromCodePoint(0x265F), white: String.fromCodePoint(0x2659) },
+  R: { black: String.fromCodePoint(0x265C), white: String.fromCodePoint(0x2656) }, 
+  N: { black: String.fromCodePoint(0x265E), white: String.fromCodePoint(0x2658) }, 
+  B: { black: String.fromCodePoint(0x265D), white: String.fromCodePoint(0x2657) }, 
+  Q: { black: String.fromCodePoint(0x265B), white: String.fromCodePoint(0x2655) },  
+  K: { black: String.fromCodePoint(0x265A), white: String.fromCodePoint(0x2654) }
+};
 
 class Piece {
   constructor(name, color, moves) {
@@ -195,16 +195,16 @@ class Move {
 
   straight(r, f) {
     let moves = [];
-    for (let i = 0; i <= Math.floor((f / WIDTH) * WIDTH) - 1; i++) {
+    for (let i = f - 1; i >= 0 ; i--) {
       Chess.add(moves, { r, f: i, p: directions.LEFT });
     }
-    for (let i = WIDTH - 1; i > f; i--) {
+    for (let i = f+1; i <= WIDTH - 1; i++) {
       Chess.add(moves, { r, f: i, p: directions.RIGHT });
     }
-    for (let i = 0; i <= Math.floor((r / HEIGHT) * HEIGHT) - 1; i++) {
+    for (let i = r-1; i >= 0; i--) {
       Chess.add(moves, { r: i, f, p: directions.UP });
     }
-    for (let i = HEIGHT - 1; i > r; i--) {
+    for (let i = r+1; i <= HEIGHT-1; i++) {
       Chess.add(moves, { r: i, f, p: directions.DOWN });
     }
     return moves;
@@ -430,14 +430,6 @@ class Chess {
       }, []);
 
     available = Object.keys(group).reduce((prev, curr) => {
-      // order moves counting away from source
-      group[curr].m.sort(Chess.compare);
-      for (let m of group[curr].m) {
-        if (Chess.compare(m, { r, f }) === -1) {
-          group[curr].m.reverse();
-          break;
-        }
-      }
       // add available moves until piece encountered
       for (let m of group[curr].m) {
         let [rank, file] = [Chess.rankIdx(m.r), FILES[m.f]];
@@ -502,7 +494,6 @@ class Chess {
           (target.rank === 8 && source.piece.color === WHITE)
         || (target.rank === 1 && source.piece.color === BLACK) )
       action |= actions.PROMOTE;
-    
     return { action, modifiers, capture };
   }
 
