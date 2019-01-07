@@ -56,12 +56,12 @@ const actions = {
 }
 const UNICODE =
 {
-  P: { black: String.fromCodePoint(0x265F), white: String.fromCodePoint(0x2659) },
-  R: { black: String.fromCodePoint(0x265C), white: String.fromCodePoint(0x2656) }, 
-  N: { black: String.fromCodePoint(0x265E), white: String.fromCodePoint(0x2658) }, 
-  B: { black: String.fromCodePoint(0x265D), white: String.fromCodePoint(0x2657) }, 
-  Q: { black: String.fromCodePoint(0x265B), white: String.fromCodePoint(0x2655) },  
-  K: { black: String.fromCodePoint(0x265A), white: String.fromCodePoint(0x2654) }
+  P: { black: 0x265F, white: 0x2659 },
+  R: { black: 0x265C, white: 0x2656 }, 
+  N: { black: 0x265E, white: 0x2658 }, 
+  B: { black: 0x265D, white: 0x2657 }, 
+  Q: { black: 0x265B, white: 0x2655 },  
+  K: { black: 0x265A, white: 0x2654 }
 };
 
 class Piece {
@@ -291,13 +291,6 @@ class Chess {
   static fileIdx(file) { return FILES.indexOf(file); }
   static inbounds(r, f) { return (((r >= 0) && (r < HEIGHT)) && ((f >= 0) && (f < WIDTH))); }
 
-  // compare the position of two pieces
-  static compare(a, b) {
-    if ((a.r * 10) + a.f < (b.r * 10) + b.f) return -1;
-    if ((a.r * 10) + a.f > (b.r * 10) + b.f) return 1;
-    return 0;
-  };
-
   // return all pieces in a flat array
   flatten() {
     return this._board.reduce((prev, curr) => {
@@ -362,7 +355,7 @@ class Chess {
     const board = this.board().reduce((prev, curr, idx) => {
       prev += `${(this.my_color === WHITE) ? Chess.rankIdx(idx) : idx+1 } | `;
       curr.forEach(f => {
-        const symbol = (unicode && f.piece.isSet()) ? `${UNICODE[f.piece.name][f.piece.color]}` : f.piece.name;
+        const symbol = (unicode && f.piece.isSet()) ? `${String.fromCodePoint(UNICODE[f.piece.name][f.piece.color])}` : f.piece.name;
         prev += ` ${(f.piece.color === BLACK) ? symbol.toLowerCase() : symbol || '.'} `;
       });
       return prev += ' | \r\n';

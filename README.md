@@ -53,7 +53,7 @@ Example output:
       +--------------------------+
          a  b  c  d  e  f  g  h
          
-Pass the `unicode` option to characters with unicode chess symbols:
+Pass the `unicode` option to replace characters with unicode chess symbols:
 
     chess.ascii({ unicode:true })
 
