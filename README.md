@@ -87,7 +87,7 @@ Example output:
 
     rnbqkbnr/ppppp1pp/5P2/1Q6/8/5N1B/PPPPPP1P/RNBQ1RK1
 
-### move
+### moves
 
 Return the total move counts (completed turns)
 
