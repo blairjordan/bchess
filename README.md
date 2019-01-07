@@ -25,7 +25,7 @@ A third option is available to specify a the piece used for promotion (if availa
 ### set
 Arbitrarily set a piece down on the board:
 
-    chess.set({square: 'h4', piece: new Piece('Q')});
+    chess.set({square: 'h4', piece: new Piece('Q','white')});
 
 ### history
 
@@ -37,21 +37,27 @@ Get the current game history.
 
 Returns an ascii string of the board.
 
-    chess.ascii({unicode:true})
+    chess.ascii({})
 
 Example output:
 
       +--------------------------+
-    8 |  ♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜  |
-    7 |  ♟  ♟  ♟  ♟  ♟  .  ♟  ♟  |
-    6 |  .  .  .  .  .  .  .  .  |
-    5 |  .  ♕  .  .  .  ♟  .  .  |
+    8 |  r  n  b  q  k  b  n  r  |
+    7 |  p  p  p  p  p  .  p  p  |
+    6 |  .  .  .  .  .  P  .  .  |
+    5 |  .  Q  .  .  .  .  .  .  |
     4 |  .  .  .  .  .  .  .  .  |
-    3 |  .  .  .  .  .  .  .  .  |
-    2 |  ♙  ♙  ♙  ♙  ♙  ♙  ♙  ♙  |
-    1 |  ♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖  |
+    3 |  .  .  .  .  .  N  .  B  |
+    2 |  P  P  P  P  P  P  .  P  |
+    1 |  R  N  B  Q  .  R  K  .  |
       +--------------------------+
-        a  b  c  d  e  f  g  h
+         a  b  c  d  e  f  g  h
+         
+Pass the `unicode` option to characters with unicode chess symbols:
+
+    chess.ascii({ unicode:true })
+
+♟  ♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜  ♙  ♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖ 
 
 ### score
 
@@ -81,7 +87,7 @@ Example output:
 
     rnbqkbnr/ppppp1pp/5P2/1Q6/8/5N1B/PPPPPP1P/RNBQ1RK1
 
-### move
+### moves
 
 Return the total move counts (completed turns)
 
