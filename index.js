@@ -10,7 +10,7 @@ chess.move({from:'f1',to:'h3'});
 chess.move({from:'e1',to:'h1'}); // castle
 chess.move({from:'f7',to:'f5'});
 chess.move({from:'g5',to:'f6'}); // en passant
-chess.set({square: 'b5', piece: new Piece('Q')}); // set down a new piece
+chess.set({square: 'b5', piece: new Piece('Q','white')}); // set down a new piece
 console.log(chess.history); // history
 console.log(chess.ascii({unicode:true})); // ascii board
 console.log(chess.score);   // game score

@@ -67,7 +67,7 @@ const actions = {
 class Piece {
   constructor(name, color, moves) {
     this.name = name || '';
-    this.color = color || WHITE;
+    this.color = color || '';
     this.moves = moves || 0;
     this.isPromoted = false;
   }
