@@ -58,7 +58,7 @@ const listen = (event, cb) => {
     case "square-click":
       $(document).on("click", ".square", function() {
         if (enforce_turns && !myturn)
-            return false;
+            return;
         const rank = $(this).data("rank");
         const file = $(this).data("file");
         const clicked = chess._get(rank,file);
