@@ -30,7 +30,7 @@ const [ROOK, KNIGHT, BISHOP, QUEEN, KING, PAWN] = ['R', 'N', 'B', 'Q', 'K', 'P']
 const FIRST_RANK = [ROOK, KNIGHT, BISHOP, QUEEN, KING, BISHOP, KNIGHT, ROOK];
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 const [WHITE, BLACK] = ['white', 'black'];
-const directions = {
+const Direction = {
   CASTLE_KING: 'CASTLE_KING',
   CASTLE_QUEEN: 'CASTLE_QUEEN',
   UP: 'UP',
@@ -43,7 +43,7 @@ const directions = {
   DOWN_RIGHT: 'DOWN_RIGHT',
   L: 'L'
 }
-const actions = {
+const Action = {
   MOVE: 1,
   PLAYER_CAPTURE: 2,
   PLAYER_CAPTURE_KING: 4,
@@ -54,7 +54,7 @@ const actions = {
   PROMOTE: 128,
   INVALID_ACTION: 256
 }
-const UNICODE =
+const Unicode =
 {
   P: { black: 0x265F, white: 0x2659 },
   R: { black: 0x265C, white: 0x2656 }, 
@@ -119,9 +119,9 @@ class Move {
       q = false;
 
     if (k)
-      Chess.add(moves, { r, f: WIDTH - 1, p: directions.CASTLE_KING });
+      Chess.add(moves, { r, f: WIDTH - 1, p: Direction.CASTLE_KING });
     if (q)
-      Chess.add(moves, { r, f: 0, p: directions.CASTLE_QUEEN });
+      Chess.add(moves, { r, f: 0, p: Direction.CASTLE_QUEEN });
 
     return moves;
   }
@@ -131,10 +131,10 @@ class Move {
     const op = (c === WHITE) ? '-' : '+';
     const first = ((c === WHITE && r === HEIGHT - 2) || (c === BLACK && r === 1));
 
-    const left = { r: eval(`r${op}1`), f: f - 1, p: directions.LEFT };
-    const right = { r: eval(`r${op}1`), f: f + 1, p: directions.RIGHT };
-    const front1 = { r: eval(`r${op}1`), f: f, p: `${directions.UP}1` };
-    const front2 = { r: eval(`r${op}2`), f: f, p: `${directions.UP}2` };
+    const left = { r: eval(`r${op}1`), f: f - 1, p: Direction.LEFT };
+    const right = { r: eval(`r${op}1`), f: f + 1, p: Direction.RIGHT };
+    const front1 = { r: eval(`r${op}1`), f: f, p: `${Direction.UP}1` };
+    const front2 = { r: eval(`r${op}2`), f: f, p: `${Direction.UP}2` };
 
     if (this.chess.populated(left)) { Chess.add(moves, left); }
     if (this.chess.populated(right)) { Chess.add(moves, right); }
@@ -157,10 +157,10 @@ class Move {
     if (!((c === WHITE && r === 3) || (c === BLACK && r === HEIGHT-4)))
       return [];
 
-    const left = { r, f: f - 1, p: directions.LEFT };
-    const right = { r, f: f + 1, p: directions.RIGHT };
-    const upLeft = { r: eval(`r${op}1`), f: f - 1, p: directions.UP_LEFT };
-    const upLight = { r: eval(`r${op}1`), f: f + 1, p: directions.UP_RIGHT };
+    const left = { r, f: f - 1, p: Direction.LEFT };
+    const right = { r, f: f + 1, p: Direction.RIGHT };
+    const upLeft = { r: eval(`r${op}1`), f: f - 1, p: Direction.UP_LEFT };
+    const upLight = { r: eval(`r${op}1`), f: f + 1, p: Direction.UP_RIGHT };
     const latestMove = this.chess.history[this.chess.history.length - 1];
 
     // latest move was opponent moving a pawn
@@ -185,10 +185,10 @@ class Move {
   diag(r, f) {
     let moves = [];
     for (let i = 1; i <= HEIGHT - 1; i++) {
-      Chess.add(moves, { r: r - i, f: f - i, p: directions.UP_LEFT });
-      Chess.add(moves, { r: r - i, f: f + i, p: directions.UP_RIGHT });
-      Chess.add(moves, { r: r + i, f: f + i, p: directions.DOWN_RIGHT });
-      Chess.add(moves, { r: r + i, f: f - i, p: directions.DOWN_LEFT });
+      Chess.add(moves, { r: r - i, f: f - i, p: Direction.UP_LEFT });
+      Chess.add(moves, { r: r - i, f: f + i, p: Direction.UP_RIGHT });
+      Chess.add(moves, { r: r + i, f: f + i, p: Direction.DOWN_RIGHT });
+      Chess.add(moves, { r: r + i, f: f - i, p: Direction.DOWN_LEFT });
     }
     return moves;
   }
@@ -196,44 +196,44 @@ class Move {
   straight(r, f) {
     let moves = [];
     for (let i = f - 1; i >= 0 ; i--) {
-      Chess.add(moves, { r, f: i, p: directions.LEFT });
+      Chess.add(moves, { r, f: i, p: Direction.LEFT });
     }
     for (let i = f+1; i <= WIDTH - 1; i++) {
-      Chess.add(moves, { r, f: i, p: directions.RIGHT });
+      Chess.add(moves, { r, f: i, p: Direction.RIGHT });
     }
     for (let i = r-1; i >= 0; i--) {
-      Chess.add(moves, { r: i, f, p: directions.UP });
+      Chess.add(moves, { r: i, f, p: Direction.UP });
     }
     for (let i = r+1; i <= HEIGHT-1; i++) {
-      Chess.add(moves, { r: i, f, p: directions.DOWN });
+      Chess.add(moves, { r: i, f, p: Direction.DOWN });
     }
     return moves;
   }
 
   box(r, f) {
     let moves = [];
-    Chess.add(moves, { r: r - 1, f, p: directions.UP });
-    Chess.add(moves, { r: r + 1, f, p: directions.DOWN });
-    Chess.add(moves, { r, f: f - 1, p: directions.LEFT });
-    Chess.add(moves, { r, f: f + 1, p: directions.RIGHT });
-    Chess.add(moves, { r: r - 1, f: f - 1, p: directions.UP_LEFT });
-    Chess.add(moves, { r: r - 1, f: f + 1, p: directions.UP_RIGHT });
-    Chess.add(moves, { r: r + 1, f: f - 1, p: directions.DOWN_LEFT });
-    Chess.add(moves, { r: r + 1, f: f + 1, p: directions.DOWN_RIGHT });
+    Chess.add(moves, { r: r - 1, f, p: Direction.UP });
+    Chess.add(moves, { r: r + 1, f, p: Direction.DOWN });
+    Chess.add(moves, { r, f: f - 1, p: Direction.LEFT });
+    Chess.add(moves, { r, f: f + 1, p: Direction.RIGHT });
+    Chess.add(moves, { r: r - 1, f: f - 1, p: Direction.UP_LEFT });
+    Chess.add(moves, { r: r - 1, f: f + 1, p: Direction.UP_RIGHT });
+    Chess.add(moves, { r: r + 1, f: f - 1, p: Direction.DOWN_LEFT });
+    Chess.add(moves, { r: r + 1, f: f + 1, p: Direction.DOWN_RIGHT });
     return moves;
   }
 
   L(r, f) {
     let moves = [],
       l = 0;
-    Chess.add(moves, { r: r - 2, f: f - 1, p: `${directions.L}${++l}` });
-    Chess.add(moves, { r: r - 2, f: f + 1, p: `${directions.L}${++l}` });
-    Chess.add(moves, { r: r + 2, f: f - 1, p: `${directions.L}${++l}` });
-    Chess.add(moves, { r: r + 2, f: f + 1, p: `${directions.L}${++l}` });
-    Chess.add(moves, { r: r - 1, f: f - 2, p: `${directions.L}${++l}` });
-    Chess.add(moves, { r: r - 1, f: f + 2, p: `${directions.L}${++l}` });
-    Chess.add(moves, { r: r + 1, f: f - 2, p: `${directions.L}${++l}` });
-    Chess.add(moves, { r: r + 1, f: f + 2, p: `${directions.L}${++l}` });
+    Chess.add(moves, { r: r - 2, f: f - 1, p: `${Direction.L}${++l}` });
+    Chess.add(moves, { r: r - 2, f: f + 1, p: `${Direction.L}${++l}` });
+    Chess.add(moves, { r: r + 2, f: f - 1, p: `${Direction.L}${++l}` });
+    Chess.add(moves, { r: r + 2, f: f + 1, p: `${Direction.L}${++l}` });
+    Chess.add(moves, { r: r - 1, f: f - 2, p: `${Direction.L}${++l}` });
+    Chess.add(moves, { r: r - 1, f: f + 2, p: `${Direction.L}${++l}` });
+    Chess.add(moves, { r: r + 1, f: f - 2, p: `${Direction.L}${++l}` });
+    Chess.add(moves, { r: r + 1, f: f + 2, p: `${Direction.L}${++l}` });
     return moves;
   }
 }
@@ -355,7 +355,7 @@ class Chess {
     const board = this.board().reduce((prev, curr, idx) => {
       prev += `${(this.my_color === WHITE) ? Chess.rankIdx(idx) : idx+1 } | `;
       curr.forEach(f => {
-        const symbol = (unicode && f.piece.isSet()) ? `${String.fromCodePoint(UNICODE[f.piece.name][f.piece.color])}` : f.piece.name;
+        const symbol = (unicode && f.piece.isSet()) ? `${String.fromCodePoint(Unicode[f.piece.name][f.piece.color])}` : f.piece.name;
         prev += ` ${(f.piece.color === BLACK) ? symbol.toLowerCase() : symbol || '.'} `;
       });
       return prev += ' | \r\n';
@@ -367,10 +367,10 @@ class Chess {
     const {source, target, action} = opts;
     const [from, to] = [{rank: source.rank, file: source.file},
                         {rank: target.rank, file: target.file}];
-    const captured = ([actions.PLAYER_CAPTURE,
-                       actions.PLAYER_CAPTURE_KING,
-                       actions.OPPONENT_CAPTURE,
-                       actions.OPPONENT_CAPTURE_KING]
+    const captured = ([Action.PLAYER_CAPTURE,
+                       Action.PLAYER_CAPTURE_KING,
+                       Action.OPPONENT_CAPTURE,
+                       Action.OPPONENT_CAPTURE_KING]
       .includes(action)) ? target.piece : null;
     this.history.push({from, to, piece: source.piece, captured, action});
   }
@@ -428,7 +428,7 @@ class Chess {
         let [rank, file] = [Chess.rankIdx(m.r), FILES[m.f]];
         let target = this._get(rank, file);
         // dont add the piece if same color as the source
-        if ((color !== target.piece.color) || ([directions.CASTLE_KING, directions.CASTLE_QUEEN].includes(curr)))
+        if ((color !== target.piece.color) || ([Direction.CASTLE_KING, Direction.CASTLE_QUEEN].includes(curr)))
           prev.push(target);
         if (target.piece.isSet())
           break;
@@ -440,7 +440,7 @@ class Chess {
 
   // return action type and position modifiers
   _action(source, target) {
-    let action = actions.MOVE;
+    let action = Action.MOVE;
     let modifiers = {
       source: { rankIdx: 0, fileIdx: 0 },
       target: { rankIdx: 0, fileIdx: 0 }
@@ -450,7 +450,7 @@ class Chess {
       if ((source.piece.color === target.piece.color)
         && (source.piece.name === KING)
         && (target.piece.name === ROOK)) {
-        action = actions.CASTLE;
+        action = Action.CASTLE;
         if (Chess.fileIdx(source.file) > Chess.fileIdx(target.file)) {
           // queen side
           modifiers.source.fileIdx = -2;
@@ -464,19 +464,19 @@ class Chess {
         this._score({piece: target.piece});
         if (target.piece.color === this.their_color) {
           if (target.piece.name === KING)
-            action = actions.PLAYER_CAPTURE_KING;
+            action = Action.PLAYER_CAPTURE_KING;
           else
-            action = actions.PLAYER_CAPTURE;
+            action = Action.PLAYER_CAPTURE;
         } else {
           if (target.piece.name === KING)
-            action = actions.OPPONENT_CAPTURE_KING;
+            action = Action.OPPONENT_CAPTURE_KING;
           else
-            action = actions.OPPONENT_CAPTURE;
+            action = Action.OPPONENT_CAPTURE;
         }
       }
     } else if (source.piece.name === PAWN && Chess.fileIdx(source.file) !== Chess.fileIdx(target.file)) {
       // moved diagonal into an empty square, en passant
-      action = actions.EN_PASSANT;
+      action = Action.EN_PASSANT;
       const c = this._get(target.rank+((source.piece.color === WHITE) ? -1 : 1), target.file);
       this._score({piece: c.piece});
       capture = c;
@@ -486,7 +486,7 @@ class Chess {
     if ( source.piece.name === PAWN &&  
           (target.rank === 8 && source.piece.color === WHITE)
         || (target.rank === 1 && source.piece.color === BLACK) )
-      action |= actions.PROMOTE;
+      action |= Action.PROMOTE;
     return { action, modifiers, capture };
   }
 
@@ -496,7 +496,7 @@ class Chess {
     if (available.find(a => (((a.rank) === target.rank) && ((a.file) === target.file)))) {
       const { action, modifiers, capture } = this._action(source, target);
       this._log({source,target,action});
-      if (action === actions.CASTLE) {
+      if (action === Action.CASTLE) {
         // get new locations
         const kingSquare = this._get(source.rank + modifiers.source.rankIdx, FILES[Chess.fileIdx(source.file) + modifiers.source.fileIdx]);
         const rookSquare = this._get(target.rank + modifiers.target.rankIdx, FILES[Chess.fileIdx(target.file) + modifiers.target.fileIdx]);
@@ -507,10 +507,10 @@ class Chess {
         rookSquare.piece.moves++;
         target.piece = new Piece();
       } else {
-        if (action === actions.EN_PASSANT) {
+        if (action === Action.EN_PASSANT) {
           capture.piece = new Piece();
         }
-        if ((action & actions.PROMOTE) === actions.PROMOTE) {
+        if ((action & Action.PROMOTE) === Action.PROMOTE) {
           source.piece.name = ([QUEEN,KNIGHT,ROOK,BISHOP].includes(promote)) ? promote : QUEEN;
           source.piece.isPromoted = true;
         }
@@ -521,7 +521,7 @@ class Chess {
       this.moves++;
       return action;
     } else {
-      return actions.INVALID_ACTION;
+      return Action.INVALID_ACTION;
     }
   }
 
@@ -565,4 +565,4 @@ class Chess {
   }
 }
 
-if (typeof module !== 'undefined') module.exports = {Chess, Piece};
+if (typeof module !== 'undefined') module.exports = {Chess, Piece, Action};
