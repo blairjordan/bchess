@@ -87,15 +87,3 @@ Example output:
 Return the total move counts (completed turns)
 
     chess.moves
-
-TODO:
-
-*(in the order I feel like doing them?)*
-
-- [ ]  turn tracking (easy)
-- [ ]  finish castling rules (prevent castling out of, through, and into check) (medium)
-- [ ]  improved algebraic notation (hard)
-- [ ]  threefold repetition finish (medium)
-- [ ]  stalemate (easy)
-- [ ]  insufficient material (easy)
-- [ ]  50 move rule
