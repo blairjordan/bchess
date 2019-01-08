@@ -41,14 +41,14 @@
   text-align: center;
 }
 
-.selected {
-  background: #ffff99 !important;
+.square.selected {
+  background: #ffff99;
 }
-.available {
-  background: #ffffe6 !important;
+.square.available.white {
+  background: #ffffe6;
 }
-.available.black {
-  background: #ffffcc !important;
+.square.available.black {
+  background: #ffffcc;
 }
 .checked > .piece{
   border: 1px red solid;
