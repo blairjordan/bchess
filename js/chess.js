@@ -250,7 +250,7 @@ class Chess {
   }
 
   board() {
-    return (this.my_color === BLACK) ? this.reverse() : this._board
+    return (this.my_color === BLACK) ? this.reverse() : this._board;
   }
 
   init() {
@@ -273,7 +273,7 @@ class Chess {
     if (((color === BLACK) && rankIdx === 1) || (((color === WHITE) && rankIdx === 6)))
       name = PAWN;
     return name ? new Piece(name, color) : null;
-  };
+  }
 
   fill() {
     this._board.forEach((b, r) => {
@@ -548,7 +548,7 @@ class Chess {
 
   // return location info
   get(opts) {
-    const {rank,file} = Chess._split(opts.square)
+    const {rank,file} = Chess._split(opts.square);
     return this._get(rank,file);
   }
 

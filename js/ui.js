@@ -2,8 +2,8 @@ chess = new Chess();
 const canvas = $(".canvas");
 let board = chess.board();
 let myturn = true;
-const enforceTurns = true;
-const enforceColor = true;
+let enforceTurns = true;
+let enforceColor = true;
 
 const pieceClass = (name, color) => `${name ? "piece " : ""}${name}${name ? " " + color : ""}`;
 
@@ -98,7 +98,7 @@ const listen = (event, cb) => {
       });
       break;
   }
-}
+};
 
 const toggleSetup = () => $(".setup").toggle();
 const toggleStatus = () => $(".status").toggle();
