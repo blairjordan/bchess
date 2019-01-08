@@ -1,4 +1,5 @@
 # chess.js
+[![Build Status](https://travis-ci.com/blairjordan/chess.js.svg?branch=master)](https://travis-ci.com/blairjordan/chess.js)
 
 Yet another chess engine.
 
