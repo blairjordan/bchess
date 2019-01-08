@@ -72,12 +72,6 @@ Fetch the information at a current square
 
     chess.get({square:'g8'});
 
-### get
-
-Fetch the information at a current square
-
-    chess.get({square:'g8'});
-
 ### fen
 
 Returns the board in [FEN](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation) notation.
@@ -98,10 +92,10 @@ TODO:
 
 *(in the order I feel like doing them?)*
 
-- [ ] turn tracking (easy)
-- [ ] finish castling rules (prevent castling out of, through, and into check) (medium)
-- [ ] improved algebraic notation (hard)
-- [ ] threefold repetition finish (medium)
-- [ ] stalemate (easy)
-- [ ] insufficient material (easy)
-- [ ] 50 move rule
+- [ ]  turn tracking (easy)
+- [ ]  finish castling rules (prevent castling out of, through, and into check) (medium)
+- [ ]  improved algebraic notation (hard)
+- [ ]  threefold repetition finish (medium)
+- [ ]  stalemate (easy)
+- [ ]  insufficient material (easy)
+- [ ]  50 move rule

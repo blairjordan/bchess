@@ -26,22 +26,22 @@ POSSIBILITY OF SUCH DAMAGE.
 const WIDTH = 8;
 const HEIGHT = 8;
 
-const [ROOK, KNIGHT, BISHOP, QUEEN, KING, PAWN] = ['R', 'N', 'B', 'Q', 'K', 'P'];
+const [ROOK, KNIGHT, BISHOP, QUEEN, KING, PAWN] = ["R", "N", "B", "Q", "K", "P"];
 const FIRST_RANK = [ROOK, KNIGHT, BISHOP, QUEEN, KING, BISHOP, KNIGHT, ROOK];
-const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-const [WHITE, BLACK] = ['white', 'black'];
+const FILES = ["a", "b", "c", "d", "e", "f", "g", "h"];
+const [WHITE, BLACK] = ["white", "black"];
 const Direction = {
-  CASTLE_KING: 'CASTLE_KING',
-  CASTLE_QUEEN: 'CASTLE_QUEEN',
-  UP: 'UP',
-  DOWN: 'DOWN',
-  LEFT: 'LEFT',
-  RIGHT: 'RIGHT',
-  UP_LEFT: 'UP_LEFT',
-  UP_RIGHT: 'UPRIGHT',
-  DOWN_LEFT: 'DOWN_LEFT',
-  DOWN_RIGHT: 'DOWN_RIGHT',
-  L: 'L'
+  CASTLE_KING: "CASTLE_KING",
+  CASTLE_QUEEN: "CASTLE_QUEEN",
+  UP: "UP",
+  DOWN: "DOWN",
+  LEFT: "LEFT",
+  RIGHT: "RIGHT",
+  UP_LEFT: "UP_LEFT",
+  UP_RIGHT: "UPRIGHT",
+  DOWN_LEFT: "DOWN_LEFT",
+  DOWN_RIGHT: "DOWN_RIGHT",
+  L: "L"
 }
 const Action = {
   MOVE: 1,
@@ -66,14 +66,14 @@ const Unicode =
 
 class Piece {
   constructor(name, color, moves) {
-    this.name = name || '';
-    this.color = color || '';
+    this.name = name || "";
+    this.color = color || "";
     this.moves = moves || 0;
     this.isPromoted = false;
   }
 
   isSet() {
-    return this.name !== '';
+    return this.name !== "";
   }
 
   hasMoved() {
@@ -128,13 +128,13 @@ class Move {
 
   pawn(r, f, c) {
     let moves = [];
-    const op = (c === WHITE) ? '-' : '+';
+    const op = (c === WHITE) ? -1 : 1;
     const first = ((c === WHITE && r === HEIGHT - 2) || (c === BLACK && r === 1));
 
-    const left = { r: eval(`r${op}1`), f: f - 1, p: Direction.LEFT };
-    const right = { r: eval(`r${op}1`), f: f + 1, p: Direction.RIGHT };
-    const front1 = { r: eval(`r${op}1`), f: f, p: `${Direction.UP}1` };
-    const front2 = { r: eval(`r${op}2`), f: f, p: `${Direction.UP}2` };
+    const left = { r: r+(1*op), f: f - 1, p: Direction.LEFT };
+    const right = { r: r+(1*op), f: f + 1, p: Direction.RIGHT };
+    const front1 = { r: r+(1*op), f: f, p: `${Direction.UP}1` };
+    const front2 = { r: r+(2*op), f: f, p: `${Direction.UP}2` };
 
     if (this.chess.populated(left)) { Chess.add(moves, left); }
     if (this.chess.populated(right)) { Chess.add(moves, right); }
@@ -148,7 +148,7 @@ class Move {
 
   en_passant(r, f, c) {
     let moves = [];
-    const op = (c === WHITE) ? '-' : '+';
+    const op = (c === WHITE) ? -1 : 1;
 
     if (this.chess.history.length === 0)
       return [];
@@ -159,8 +159,8 @@ class Move {
 
     const left = { r, f: f - 1, p: Direction.LEFT };
     const right = { r, f: f + 1, p: Direction.RIGHT };
-    const upLeft = { r: eval(`r${op}1`), f: f - 1, p: Direction.UP_LEFT };
-    const upLight = { r: eval(`r${op}1`), f: f + 1, p: Direction.UP_RIGHT };
+    const upLeft = { r: r+(1*op), f: f - 1, p: Direction.UP_LEFT };
+    const upLight = { r: r+(1*op), f: f + 1, p: Direction.UP_RIGHT };
     const latestMove = this.chess.history[this.chess.history.length - 1];
 
     // latest move was opponent moving a pawn
@@ -171,7 +171,7 @@ class Move {
     const [latestMoveToRankIdx, latestMoveToFileIdx] = [Chess.rankIdx(latestMove.to.rank), FILES.indexOf(latestMove.to.file)];
 
     if ((latestMoveFromFileIdx !== latestMoveToFileIdx) // moved straight ahead
-      || (latestMoveFromRankIdx !== eval(`latestMoveToRankIdx${op}2`))) // moved two squares
+      || (latestMoveFromRankIdx !== latestMoveToRankIdx+(2*op))) // moved two squares
       return [];
 
     if (latestMoveToFileIdx === left.f)
@@ -259,15 +259,15 @@ class Chess {
       () => new Array(WIDTH).fill().map(
         () => new (function () {
           this.piece = new Piece();
-          this.rank = '';
-          this.file = '';
+          this.rank = "";
+          this.file = "";
         })()
       )
     );
   }
 
   piece(rankIdx, colIdx, color) {
-    let name = '';
+    let name = "";
     if (((color === BLACK) && rankIdx === 0) || (((color === WHITE) && rankIdx === 7)))
       name = FIRST_RANK[colIdx];
     if (((color === BLACK) && rankIdx === 1) || (((color === WHITE) && rankIdx === 6)))
@@ -305,9 +305,9 @@ class Chess {
   find(opts) {
     const { name, color } = opts;
     return this.flatten().filter(f => (
-      ((typeof (name) === 'undefined') || (f.piece.name === name))
+      ((typeof (name) === "undefined") || (f.piece.name === name))
       &&
-      ((typeof (color) === 'undefined') || (f.piece.color === color))
+      ((typeof (color) === "undefined") || (f.piece.color === color))
       &&
       (f.piece.isSet())
     ));
@@ -333,33 +333,33 @@ class Chess {
 
   fen() {
     return this.board().reduce((prev, curr, idx) => {
-      let rank = '';
+      let rank = "";
       let blanks = 0;
       curr.forEach((f,i) => {
         if (!f.piece.isSet())
           blanks++;
         else
           blanks = 0;
-        rank += `${(blanks && ((i === WIDTH-1) || curr[i+1].piece.isSet())) ? blanks : ''}${(f.piece.color === BLACK) ? f.piece.name.toLowerCase() : f.piece.name}`;
+        rank += `${(blanks && ((i === WIDTH-1) || curr[i+1].piece.isSet())) ? blanks : ""}${(f.piece.color === BLACK) ? f.piece.name.toLowerCase() : f.piece.name}`;
       });
       prev.push(rank);
       return prev;
     }, [])
-    .join('/');
+    .join("/");
   }
 
   ascii(opts) {
     const { unicode } = opts;
-    const border = '  +--------------------------+\r\n';
-    const files = `     ${(this.my_color === WHITE) ? FILES.join('  ') : FILES.slice().reverse().join('  ')}`;
+    const border = "  +--------------------------+\r\n";
+    const files = `     ${(this.my_color === WHITE) ? FILES.join("  ") : FILES.slice().reverse().join("  ")}`;
     const board = this.board().reduce((prev, curr, idx) => {
       prev += `${(this.my_color === WHITE) ? Chess.rankIdx(idx) : idx+1 } | `;
       curr.forEach(f => {
         const symbol = (unicode && f.piece.isSet()) ? `${String.fromCodePoint(Unicode[f.piece.name][f.piece.color])}` : f.piece.name;
-        prev += ` ${(f.piece.color === BLACK) ? symbol.toLowerCase() : symbol || '.'} `;
+        prev += ` ${(f.piece.color === BLACK) ? symbol.toLowerCase() : symbol || "."} `;
       });
-      return prev += ' | \r\n';
-    }, '');
+      return prev += " | \r\n";
+    }, "");
     return `${border}${board}${border}${files}`;
   }
 
@@ -526,7 +526,7 @@ class Chess {
   }
 
   static _split(str) {
-    const [file, rank] = str.split('');
+    const [file, rank] = str.split("");
     return {file, rank};
   }
   
@@ -565,4 +565,4 @@ class Chess {
   }
 }
 
-if (typeof module !== 'undefined') module.exports = {Chess, Piece, Action};
+if (typeof module !== "undefined") module.exports = {Chess, Piece, Action};
