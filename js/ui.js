@@ -2,8 +2,8 @@ chess = new Chess();
 const canvas = $(".canvas");
 let board = chess.board();
 let myturn = true;
-let enforce_turns = true;
-let enforce_color = true;
+const enforceTurns = true;
+const enforceColor = true;
 
 const pieceClass = (name, color) => `${name ? "piece " : ""}${name}${name ? " " + color : ""}`;
 
@@ -57,7 +57,7 @@ const listen = (event, cb) => {
   switch (event) {
     case "square-click":
       $(document).on("click", ".square", function() {
-        if (enforce_turns && !myturn)
+        if (enforceTurns && !myturn)
             return;
         const rank = $(this).data("rank");
         const file = $(this).data("file");
@@ -67,7 +67,7 @@ const listen = (event, cb) => {
         const square = $(".square");
         square.removeClass("selected");
         if (source === null) {
-          if (!clicked.piece.isSet() || (enforce_color && (clicked.piece.color !== chess.my_color)))
+          if (!clicked.piece.isSet() || (enforceColor && (clicked.piece.color !== chess.my_color)))
             return;
           source = clicked;
           elem.addClass("selected");

@@ -1,4 +1,4 @@
-const { Chess, Piece } = require('./js/chess');
+const { Chess, Piece } = require("./js/chess");
 
 const chess = new Chess();
 

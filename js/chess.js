@@ -53,7 +53,7 @@ const Action = {
   EN_PASSANT: 64,
   PROMOTE: 128,
   INVALID_ACTION: 256
-}
+};
 const Unicode =
 {
   P: { black: 0x265F, white: 0x2659 },
@@ -133,8 +133,8 @@ class Move {
 
     const left = { r: r+(1*op), f: f - 1, p: Direction.LEFT };
     const right = { r: r+(1*op), f: f + 1, p: Direction.RIGHT };
-    const front1 = { r: r+(1*op), f: f, p: `${Direction.UP}1` };
-    const front2 = { r: r+(2*op), f: f, p: `${Direction.UP}2` };
+    const front1 = { r: r+(1*op), f, p: `${Direction.UP}1` };
+    const front2 = { r: r+(2*op), f, p: `${Direction.UP}2` };
 
     if (this.chess.populated(left)) { Chess.add(moves, left); }
     if (this.chess.populated(right)) { Chess.add(moves, right); }
@@ -146,7 +146,7 @@ class Move {
     return moves;
   }
 
-  en_passant(r, f, c) {
+  enPassant(r, f, c) {
     let moves = [];
     const op = (c === WHITE) ? -1 : 1;
 
@@ -392,7 +392,7 @@ class Chess {
 
     switch (piece) {
       case PAWN:
-        available = [...this.Moves.pawn(r, f, color), ...this.Moves.en_passant(r, f, color)];
+        available = [...this.Moves.pawn(r, f, color), ...this.Moves.enPassant(r, f, color)];
         break;
       case ROOK:
         available = this.Moves.straight(r, f);
@@ -538,7 +538,7 @@ class Chess {
       reversed[idx] = rank;
     });
     return reversed;
-  };
+  }
 
   // move a piece from location to target
   move(opts) {
