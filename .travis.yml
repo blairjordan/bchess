@@ -3,3 +3,7 @@ node_js:
   - "node"
 install:
   - npm install -g codecov nyc mocha
+script:
+  - nyc mocha --timeout 10000 --exit
+  - nyc report --reporter=text-lcov > coverage.lcov
+  - codecov

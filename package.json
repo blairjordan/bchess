@@ -13,7 +13,7 @@
   },
   "scripts": {
     "start": "node server.js",
-    "test": "nyc mocha --timeout 10000 --exit && npm run report-coverage",
+    "test": "nyc mocha --timeout 10000 --exit",
     "report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
   },
   "repository": {
