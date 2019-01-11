@@ -14,7 +14,7 @@ describe("Movement tests", () => {
       }
   });
 
-  it("Castles king/queenside", (done) => {
+  it("Castle", (done) => {
     try {
       let [whiteQueen, whiteKing, blackQueen, blackKing] = Array(4).fill(false);
       let action = null;
@@ -51,6 +51,61 @@ describe("Movement tests", () => {
 
       assert(whiteQueen && whiteKing && blackQueen && blackKing);
 
+      done();
+    } catch (e) {
+      done(e);
+    }
+  });
+
+  it("Attempt invalid castling", (done) => {
+    try {
+      let [whiteQueensideRook, whiteKingsideRook, blackQueensideRook, blackKingsideRook, whiteKingsideKing] = Array(5).fill(false);
+      let action = null;
+      
+      // castle queen side white with moved rook
+      let chess = new Chess();
+      chess.set({square:"b1",piece: new Piece()});
+      chess.set({square:"c1",piece: new Piece()});
+      chess.set({square:"d1",piece: new Piece()});
+      chess.get({square:"a1"}).piece.moves = 1;
+      action = chess.move({from:"e1",to:"a1"});
+      whiteQueensideRook = (action === Action.INVALID_ACTION);
+      
+      // castle king side white with moved rook
+      chess = new Chess();
+      chess.set({square:"f1",piece: new Piece()});
+      chess.set({square:"g1",piece: new Piece()});
+      chess.get({square:"h1"}).piece.moves = 1;
+      action = chess.move({from:"e1",to:"h1"});
+      whiteKingsideRook = (action === Action.INVALID_ACTION);
+      
+      // castle queen side black with moved rook
+      chess = new Chess();
+      chess.set({square:"b8",piece: new Piece()});
+      chess.set({square:"c8",piece: new Piece()});
+      chess.set({square:"d8",piece: new Piece()});
+      chess.get({square:"a8"}).piece.moves = 1;
+      action = chess.move({from:"e8",to:"a8"});
+      blackQueensideRook = (action === Action.INVALID_ACTION);
+      
+      // castle king side black with moved rook
+      chess = new Chess();
+      chess.set({square:"f8",piece: new Piece()});
+      chess.set({square:"g8",piece: new Piece()});
+      chess.get({square:"h8"}).piece.moves = 1;
+      action = chess.move({from:"e8",to:"h8"});
+      blackKingsideRook = (action === Action.INVALID_ACTION);
+
+      // castle king side white with moved king
+      chess = new Chess();
+      chess.set({square:"f1",piece: new Piece()});
+      chess.set({square:"g1",piece: new Piece()});
+      chess.get({square:"e1"}).piece.moves = 1;
+      action = chess.move({from:"e1",to:"h1"});
+      whiteKingsideKing = (action === Action.INVALID_ACTION);
+
+      assert(whiteQueensideRook && whiteKingsideRook && blackQueensideRook && blackKingsideRook && whiteKingsideKing);
+      
       done();
     } catch (e) {
       done(e);

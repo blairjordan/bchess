@@ -44,6 +44,23 @@ describe("Capture tests", () => {
         }
     });  
 
+    it("Attempt invalid en passant", (done) => {
+      try {
+        const chess = new Chess();
+  
+        // white en passant to left
+        chess.move({from:"f2",to:"f4"});
+        chess.move({from:"f4",to:"f5"});
+        chess.move({from:"e7",to:"e5"}); // en passant becomes available
+        chess.move({from:"b1",to:"c3"}); // an unrelated move occurs, en passant no longer available
+        let move = chess.move({from:"f5",to:"e6"});
+        assert(move === Action.INVALID_ACTION);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });  
+
     it("You capture", (done) => {
         try {
             const chess = new Chess();

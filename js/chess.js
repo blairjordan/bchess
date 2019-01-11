@@ -163,14 +163,11 @@ class Move {
     const upLight = { r: r+(1*op), f: f + 1, p: Direction.UP_RIGHT };
     const latestMove = this.chess.history[this.chess.history.length - 1];
 
-    // latest move was opponent moving a pawn
-    if (latestMove.piece.name !== PAWN || latestMove.piece.color === c)
-      return [];
-
     const [latestMoveFromRankIdx, latestMoveFromFileIdx] = [Chess.rankIdx(latestMove.from.rank), FILES.indexOf(latestMove.from.file)];
     const [latestMoveToRankIdx, latestMoveToFileIdx] = [Chess.rankIdx(latestMove.to.rank), FILES.indexOf(latestMove.to.file)];
 
-    if ((latestMoveFromFileIdx !== latestMoveToFileIdx) // moved straight ahead
+    if ((latestMove.piece.name !== PAWN || latestMove.piece.color === c) // latest move was opponent moving a pawn
+      || (latestMoveFromFileIdx !== latestMoveToFileIdx) // moved straight ahead
       || (latestMoveFromRankIdx !== latestMoveToRankIdx+(2*op))) // moved two squares
       return [];
 
