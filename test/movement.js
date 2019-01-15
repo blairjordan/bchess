@@ -4,14 +4,14 @@ const { Chess, Piece, Action } = require("../js/chess");
 describe("Movement tests", () => {
 
   it("Move a piece", (done) => {
-      try {
-        const chess = new Chess();
-        const action = chess.move({from:"g2",to:"g4"});
-        assert(action === Action.MOVE);
-        done();
-      } catch (e) {
-        done(e);
-      }
+    try {
+      const chess = new Chess();
+      const action = chess.move({from:"g2",to:"g4"});
+      assert(action === Action.MOVE);
+      done();
+    } catch (e) {
+      done(e);
+    }
   });
 
   it("Castle", (done) => {

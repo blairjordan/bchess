@@ -361,15 +361,19 @@ class Chess {
   }
 
   _log(opts) {
-    const {source, target, action} = opts;
-    const [from, to] = [{rank: source.rank, file: source.file},
-                        {rank: target.rank, file: target.file}];
+    const {from, to, action} = opts;
     const captured = ([Action.PLAYER_CAPTURE,
                        Action.PLAYER_CAPTURE_KING,
                        Action.OPPONENT_CAPTURE,
                        Action.OPPONENT_CAPTURE_KING]
-      .includes(action)) ? target.piece : null;
-    this.history.push({from, to, piece: source.piece, captured, action});
+      .includes(action)) ? to.piece : null;
+    this.history.push({
+      from: {rank: from.rank, file: from.file}, 
+      to: {rank: to.rank, file: to.file}, 
+      piece: from.piece, 
+      captured, 
+      action
+    });
   }
 
   _score(opts) {
@@ -436,85 +440,85 @@ class Chess {
   }
 
   // return action type and position modifiers
-  _action(source, target) {
+  _action(from, to) {
     let action = Action.MOVE;
     let modifiers = {
-      source: { rankIdx: 0, fileIdx: 0 },
-      target: { rankIdx: 0, fileIdx: 0 }
+      from: { rankIdx: 0, fileIdx: 0 },
+      to: { rankIdx: 0, fileIdx: 0 }
     };
     let capture = null;
-    if (target.piece.isSet()) {
-      if ((source.piece.color === target.piece.color)
-        && (source.piece.name === KING)
-        && (target.piece.name === ROOK)) {
+    if (to.piece.isSet()) {
+      if ((from.piece.color === to.piece.color)
+        && (from.piece.name === KING)
+        && (to.piece.name === ROOK)) {
         action = Action.CASTLE;
-        if (Chess.fileIdx(source.file) > Chess.fileIdx(target.file)) {
+        if (Chess.fileIdx(from.file) > Chess.fileIdx(to.file)) {
           // queen side
-          modifiers.source.fileIdx = -2;
-          modifiers.target.fileIdx = 3;
+          modifiers.from.fileIdx = -2;
+          modifiers.to.fileIdx = 3;
         } else {
           // king side
-          modifiers.source.fileIdx = 2;
-          modifiers.target.fileIdx = -2;
+          modifiers.from.fileIdx = 2;
+          modifiers.to.fileIdx = -2;
         }
       } else {
-        this._score({piece: target.piece});
-        if (target.piece.color === this.theirColor) {
-          if (target.piece.name === KING)
+        this._score({piece: to.piece});
+        if (to.piece.color === this.theirColor) {
+          if (to.piece.name === KING)
             action = Action.PLAYER_CAPTURE_KING;
           else
             action = Action.PLAYER_CAPTURE;
         } else {
-          if (target.piece.name === KING)
+          if (to.piece.name === KING)
             action = Action.OPPONENT_CAPTURE_KING;
           else
             action = Action.OPPONENT_CAPTURE;
         }
       }
-    } else if (source.piece.name === PAWN && Chess.fileIdx(source.file) !== Chess.fileIdx(target.file)) {
+    } else if (from.piece.name === PAWN && Chess.fileIdx(from.file) !== Chess.fileIdx(to.file)) {
       // moved diagonal into an empty square, en passant
       action = Action.EN_PASSANT;
-      const c = this._get(target.rank+((source.piece.color === WHITE) ? -1 : 1), target.file);
+      const c = this._get(to.rank+((from.piece.color === WHITE) ? -1 : 1), to.file);
       this._score({piece: c.piece});
       capture = c;
     }
 
     // check pawn promotion
-    if ( source.piece.name === PAWN &&  
-         ((target.rank === 8 && source.piece.color === WHITE)
-        || (target.rank === 1 && source.piece.color === BLACK)) )
+    if ( from.piece.name === PAWN &&  
+         ((to.rank === 8 && from.piece.color === WHITE)
+        || (to.rank === 1 && from.piece.color === BLACK)) )
       action |= Action.PROMOTE;
     return { action, modifiers, capture };
   }
 
   // move piece at source square to target square
-  _move(source, target, promote = null) {
-    const available = this._available(source);
-    if (available.find(a => (((a.rank) === target.rank) && ((a.file) === target.file)))) {
-      const { action, modifiers, capture } = this._action(source, target);
-      this._log({source,target,action});
+  _move(from, to, promote = null) {
+    const available = this._available(from);
+    if (available.find(a => (((a.rank) === to.rank) && ((a.file) === to.file)))) {
+      const { action, modifiers, capture } = this._action(from, to);
+      this._log({from, to,action});
       if (action === Action.CASTLE) {
         // get new locations
-        const kingSquare = this._get(source.rank + modifiers.source.rankIdx, FILES[Chess.fileIdx(source.file) + modifiers.source.fileIdx]);
-        const rookSquare = this._get(target.rank + modifiers.target.rankIdx, FILES[Chess.fileIdx(target.file) + modifiers.target.fileIdx]);
+        const kingSquare = this._get(from.rank + modifiers.from.rankIdx, FILES[Chess.fileIdx(from.file) + modifiers.from.fileIdx]);
+        const rookSquare = this._get(to.rank + modifiers.to.rankIdx, FILES[Chess.fileIdx(to.file) + modifiers.to.fileIdx]);
         // assign pieces to squares
-        kingSquare.piece = source.piece;
-        rookSquare.piece = target.piece;
+        kingSquare.piece = from.piece;
+        rookSquare.piece = to.piece;
         kingSquare.piece.moves++;
         rookSquare.piece.moves++;
-        target.piece = new Piece();
+        to.piece = new Piece();
       } else {
         if (action === Action.EN_PASSANT) {
           capture.piece = new Piece();
         }
         if ((action & Action.PROMOTE) === Action.PROMOTE) {
-          source.piece.name = ([QUEEN,KNIGHT,ROOK,BISHOP].includes(promote)) ? promote : QUEEN;
-          source.piece.isPromoted = true;
+          from.piece.name = ([QUEEN,KNIGHT,ROOK,BISHOP].includes(promote)) ? promote : QUEEN;
+          from.piece.isPromoted = true;
         }
-        target.piece = source.piece;
-        target.piece.moves++;
+        to.piece = from.piece;
+        to.piece.moves++;
       }
-      source.piece = new Piece();
+      from.piece = new Piece();
       this.moves++;
       return action;
     } else {
@@ -562,6 +566,15 @@ class Chess {
   // set a piece down at location
   set(opts) {
     this._get(...Chess._split(opts.square)).piece = opts.piece;
+  }
+  
+  moveToSan(opts) {
+    const [ from, to ] = [this._get(...Chess._split(opts.from)), this._get(...Chess._split(opts.to))];
+    const { action, capture } = this._action(from, to);
+    let san = "";
+    console.log(action, capture);
+    // start SAN logic here
+    return san;
   }
 }
 
