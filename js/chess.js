@@ -49,10 +49,11 @@ const Action = {
   PLAYER_CAPTURE_KING: 4,
   OPPONENT_CAPTURE: 8,
   OPPONENT_CAPTURE_KING: 16,
-  CASTLE: 32,
-  EN_PASSANT: 64,
-  PROMOTE: 128,
-  INVALID_ACTION: 256
+  CASTLE_KING: 32,
+  CASTLE_QUEEN: 64,
+  EN_PASSANT: 128,
+  PROMOTE: 256,
+  INVALID_ACTION: 512
 };
 const Unicode =
 {
@@ -300,11 +301,15 @@ class Chess {
 
   // find pieces using search criteria or all pieces
   find(opts) {
-    const { name, color } = opts;
+    const { name, color, file, rank } = opts;
     return this.flatten().filter(f => (
       ((typeof (name) === "undefined") || (f.piece.name === name))
       &&
       ((typeof (color) === "undefined") || (f.piece.color === color))
+      &&
+      ((typeof (file) === "undefined") || (f.file === file))
+      &&
+      ((typeof (rank) === "undefined") || (f.rank === rank))
       &&
       (f.piece.isSet())
     ));
@@ -451,18 +456,19 @@ class Chess {
       if ((from.piece.color === to.piece.color)
         && (from.piece.name === KING)
         && (to.piece.name === ROOK)) {
-        action = Action.CASTLE;
         if (Chess.fileIdx(from.file) > Chess.fileIdx(to.file)) {
           // queen side
+          action = Action.CASTLE_QUEEN;
           modifiers.from.fileIdx = -2;
           modifiers.to.fileIdx = 3;
         } else {
           // king side
+          action = Action.CASTLE_KING;
           modifiers.from.fileIdx = 2;
           modifiers.to.fileIdx = -2;
         }
       } else {
-        this._score({piece: to.piece});
+        this._score({piece: to.piece}); // TODO: Move scoring out of _action
         if (to.piece.color === this.theirColor) {
           if (to.piece.name === KING)
             action = Action.PLAYER_CAPTURE_KING;
@@ -479,7 +485,7 @@ class Chess {
       // moved diagonal into an empty square, en passant
       action = Action.EN_PASSANT;
       const c = this._get(to.rank+((from.piece.color === WHITE) ? -1 : 1), to.file);
-      this._score({piece: c.piece});
+      this._score({piece: c.piece}); // TODO: Move scoring out of _action
       capture = c;
     }
 
@@ -497,7 +503,7 @@ class Chess {
     if (available.find(a => (((a.rank) === to.rank) && ((a.file) === to.file)))) {
       const { action, modifiers, capture } = this._action(from, to);
       this._log({from, to,action});
-      if (action === Action.CASTLE) {
+      if (action & (Action.CASTLE_KING | Action.CASTLE_QUEEN)) {
         // get new locations
         const kingSquare = this._get(from.rank + modifiers.from.rankIdx, FILES[Chess.fileIdx(from.file) + modifiers.from.fileIdx]);
         const rookSquare = this._get(to.rank + modifiers.to.rankIdx, FILES[Chess.fileIdx(to.file) + modifiers.to.fileIdx]);
@@ -570,10 +576,28 @@ class Chess {
   
   moveToSan(opts) {
     const [ from, to ] = [this._get(...Chess._split(opts.from)), this._get(...Chess._split(opts.to))];
-    const { action, capture } = this._action(from, to);
+    const { action } = this._action(from, to);
     let san = "";
-    console.log(action, capture);
-    // start SAN logic here
+    let capture = ""; // x
+    let check = ""; // +
+    let checkmate = ""; // #
+
+    console.log(action);
+    if (action & (Action.CASTLE_KING))
+      return "0-0";
+      
+    if (action & (Action.CASTLE_QUEEN))
+      return "0-0-0";
+
+    if (action & (Action.OPPONENT_CAPTURE | Action.PLAYER_CAPTURE))
+      capture = "x";
+      
+    let fromPiece = (from.piece.name !== PAWN) ? from.piece.name : "";
+    let fromFile = ((from.piece.name !== PAWN) || capture) ? from.file : "";
+    let fromRank = (from.piece.name !== PAWN) ? from.rank : "";
+    
+    san = `${fromPiece}${fromFile}${fromRank}${capture}${to.file}${to.rank}`
+
     return san;
   }
 }
