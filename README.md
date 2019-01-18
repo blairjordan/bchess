@@ -73,7 +73,7 @@ Fetch the information at a current square
 
 ### fen
 
-Returns the board in [FEN](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation) notation.
+Returns the current game state in [FEN](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation) notation.
 
     chess.fen()
 
@@ -81,8 +81,12 @@ Example output:
 
     rnbqkbnr/ppppp1pp/5P2/1Q6/8/5N1B/PPPPPP1P/RNBQ1RK1
 
+You can also initialise a new game using FEN notation:
+
+    const chess = new Chess({fen:"kb5Q/p7/Pp6/1P6/4p3/4R3/4P1p1/6K1"});
+
 ### moves
 
-Return the total move counts (completed turns)
+Return the total move count (completed turns)
 
     chess.moves

@@ -238,13 +238,18 @@ class Move {
 
 class Chess {
   constructor(opts) {
-    const { color } = opts; 
+    const { color, fen } = opts; 
     this.Moves = new Move(this);
     [this.myColor, this.theirColor] = (color === BLACK) ? [BLACK, WHITE] : [WHITE, BLACK];
     this.history = [];
     this.score = {white: [], black: []};  // TODO: Change approach and calc each time from missing pieces. This will allow scoring a game passed in using fen.
     this.init();
-    this.fill();
+
+    if (fen)
+      this.input(fen);
+    else
+      this.fill(); // TODO: Get rid of this function
+
     this.moves = 0;
   }
 
@@ -349,6 +354,21 @@ class Chess {
       return prev;
     }, [])
     .join("/");
+  }
+
+  input(fen) {
+    fen.split("/").forEach((l,k) => {
+        let skipped = 0;
+        l.split("").forEach((c,i) => {
+          if (!isNaN(parseInt(c))) {
+            skipped+= parseInt(c);
+          } else {
+            let color = (c == c.toUpperCase()) ? WHITE : BLACK;
+            this.set({square: `${FILES[skipped]}${HEIGHT-k}`, piece: new Piece(c, color)});
+            skipped++;
+          }
+        });
+    });
   }
 
   ascii(opts) {
