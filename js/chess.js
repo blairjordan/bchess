@@ -242,7 +242,7 @@ class Chess {
     this.Moves = new Move(this);
     [this.myColor, this.theirColor] = (color === BLACK) ? [BLACK, WHITE] : [WHITE, BLACK];
     this.history = [];
-    this.score = {white: [], black: []};
+    this.score = {white: [], black: []};  // TODO: Change approach and calc each time from missing pieces. This will allow scoring a game passed in using fen.
     this.init();
     this.fill();
     this.moves = 0;
@@ -575,13 +575,27 @@ class Chess {
     this._get(...Chess._split(opts.square)).piece = opts.piece;
   }
   
-  moveToSan(opts) {
+  // return pieces causing ambiguity
+  ambiguousSAN(from, to) {
+    return (
+      this.find({name: from.piece.name, color: from.piece.color}) // find pieces of same type
+        .filter(s => !(s.file === from.file && s.rank === from.rank)) // excluding this piece
+        .map(s => ( // if an available move matches destination square, ambiguous
+            {
+              from: s, 
+              ambiguous: this._available(s).filter(a => (a.rank === to.rank) && (a.file === to.file)).length > 0
+            }
+        ))
+    )
+    .filter(p => (p.ambiguous))
+    .map(p => p.from);
+  }
+
+  moveToSAN(opts) {
     const [ from, to ] = [this._get(...Chess._split(opts.from)), this._get(...Chess._split(opts.to))];
     const { action } = this._action(from, to);
-    let san = "";
     let capture = ""; // x
-    let check = ""; // +
-    let checkmate = ""; // #
+    let fromCoord = "";
 
     if (action & (Action.CASTLE_KING))
       return "0-0";
@@ -589,18 +603,26 @@ class Chess {
     if (action & (Action.CASTLE_QUEEN))
       return "0-0-0";
 
+    if (action & (Action.PROMOTE))
+      return `${to.file}${to.rank}=${opts.promote}`;
+
+    let ambiguous = this.ambiguousSAN(from, to);
+    if (ambiguous.filter(a => a.file === from.file).length === 0)
+      fromCoord = from.file;
+    else if (ambiguous.filter(a => a.rank === from.rank).length === 0)
+      fromCoord = from.rank;
+    else
+      fromCoord = `${from.file}${from.rank}`
+
     if (action & (Action.OPPONENT_CAPTURE | Action.PLAYER_CAPTURE))
       capture = "x";
       
-    let fromPiece = (from.piece.name !== PAWN) ? from.piece.name : "";
-    let fromFile = ((from.piece.name !== PAWN) || capture) ? from.file : "";
-    let fromRank = (from.piece.name !== PAWN) ? from.rank : "";
+    // TODO:
+    // include pawn file if capture
+    // add check +
+    // add checkmate #
     
-    console.log(this.find({name: from.piece.name, color: from.piece.color}));
-
-    san = `${fromPiece}${fromFile}${fromRank}${capture}${to.file}${to.rank}`
-
-    return san;
+    return `${from.piece.name}${fromCoord}${capture}${to.file}${to.rank}`
   }
 }
 
