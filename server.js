@@ -1,6 +1,6 @@
 const io = require("socket.io")(3001);
 const { Chess, Piece } = require("./js/chess");
-const chess = new Chess();
+const chess = new Chess({});
 
 io.on("connect", function(socket){
     console.log("a user connected");

@@ -5,7 +5,7 @@ describe("Movement tests", () => {
 
   it("Move a piece", (done) => {
     try {
-      const chess = new Chess();
+      const chess = new Chess({});
       const action = chess.move({from:"g2",to:"g4"});
       assert(action === Action.MOVE);
       done();
@@ -20,7 +20,7 @@ describe("Movement tests", () => {
       let action = null;
       
       // castle queen side white
-      let chess = new Chess();
+      let chess = new Chess({});
       chess.set({square:"b1",piece: new Piece()});
       chess.set({square:"c1",piece: new Piece()});
       chess.set({square:"d1",piece: new Piece()});
@@ -28,14 +28,14 @@ describe("Movement tests", () => {
       whiteQueen = chess.get({square: "c1"}).piece.name === "K" && chess.get({square: "d1"}).piece.name === "R" && action === Action.CASTLE_QUEEN;
 
       // castle king side white
-      chess = new Chess();
+      chess = new Chess({});
       chess.set({square:"f1",piece: new Piece()});
       chess.set({square:"g1",piece: new Piece()});
       action = chess.move({from:"e1",to:"h1"});
       whiteKing = chess.get({square: "g1"}).piece.name === "K" && chess.get({square: "f1"}).piece.name === "R" && action === Action.CASTLE_KING;
 
       // castle queen side black
-      chess = new Chess();
+      chess = new Chess({});
       chess.set({square:"b8",piece: new Piece()});
       chess.set({square:"c8",piece: new Piece()});
       chess.set({square:"d8",piece: new Piece()});
@@ -43,7 +43,7 @@ describe("Movement tests", () => {
       blackQueen = chess.get({square: "c8"}).piece.name === "K" && chess.get({square: "d8"}).piece.name === "R" && action === Action.CASTLE_QUEEN;
       
       // castle king side black
-      chess = new Chess();
+      chess = new Chess({});
       chess.set({square:"f8",piece: new Piece()});
       chess.set({square:"g8",piece: new Piece()});
       action = chess.move({from:"e8",to:"h8"});
@@ -63,7 +63,7 @@ describe("Movement tests", () => {
       let action = null;
       
       // castle queen side white with moved rook
-      let chess = new Chess();
+      let chess = new Chess({});
       chess.set({square:"b1",piece: new Piece()});
       chess.set({square:"c1",piece: new Piece()});
       chess.set({square:"d1",piece: new Piece()});
@@ -72,7 +72,7 @@ describe("Movement tests", () => {
       whiteQueensideRook = (action === Action.INVALID_ACTION);
       
       // castle king side white with moved rook
-      chess = new Chess();
+      chess = new Chess({});
       chess.set({square:"f1",piece: new Piece()});
       chess.set({square:"g1",piece: new Piece()});
       chess.get({square:"h1"}).piece.moves = 1;
@@ -80,7 +80,7 @@ describe("Movement tests", () => {
       whiteKingsideRook = (action === Action.INVALID_ACTION);
       
       // castle queen side black with moved rook
-      chess = new Chess();
+      chess = new Chess({});
       chess.set({square:"b8",piece: new Piece()});
       chess.set({square:"c8",piece: new Piece()});
       chess.set({square:"d8",piece: new Piece()});
@@ -89,7 +89,7 @@ describe("Movement tests", () => {
       blackQueensideRook = (action === Action.INVALID_ACTION);
       
       // castle king side black with moved rook
-      chess = new Chess();
+      chess = new Chess({});
       chess.set({square:"f8",piece: new Piece()});
       chess.set({square:"g8",piece: new Piece()});
       chess.get({square:"h8"}).piece.moves = 1;
@@ -97,7 +97,7 @@ describe("Movement tests", () => {
       blackKingsideRook = (action === Action.INVALID_ACTION);
 
       // castle king side white with moved king
-      chess = new Chess();
+      chess = new Chess({});
       chess.set({square:"f1",piece: new Piece()});
       chess.set({square:"g1",piece: new Piece()});
       chess.get({square:"e1"}).piece.moves = 1;
@@ -114,7 +114,7 @@ describe("Movement tests", () => {
 
   it("Available moves", (done) => {
     try {
-      const chess = new Chess();
+      const chess = new Chess({});
       assert(["b3", "b4"].join() === chess.available({square:"b2"}).map(s => `${s.file}${s.rank}`).join());
       done();
     } catch (e) {

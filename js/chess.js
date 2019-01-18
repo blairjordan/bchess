@@ -237,7 +237,8 @@ class Move {
 }
 
 class Chess {
-  constructor(color) {
+  constructor(opts) {
+    const { color } = opts; 
     this.Moves = new Move(this);
     [this.myColor, this.theirColor] = (color === BLACK) ? [BLACK, WHITE] : [WHITE, BLACK];
     this.history = [];
@@ -582,7 +583,6 @@ class Chess {
     let check = ""; // +
     let checkmate = ""; // #
 
-    console.log(action);
     if (action & (Action.CASTLE_KING))
       return "0-0";
       
@@ -596,6 +596,8 @@ class Chess {
     let fromFile = ((from.piece.name !== PAWN) || capture) ? from.file : "";
     let fromRank = (from.piece.name !== PAWN) ? from.rank : "";
     
+    console.log(this.find({name: from.piece.name, color: from.piece.color}));
+
     san = `${fromPiece}${fromFile}${fromRank}${capture}${to.file}${to.rank}`
 
     return san;

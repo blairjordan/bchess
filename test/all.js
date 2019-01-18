@@ -5,7 +5,7 @@ describe("Chess tests", () => {
 
   it("Set a square", (done) => {
     try {
-      const chess = new Chess();
+      const chess = new Chess({});
       chess.set({square: "b5", piece: new Piece("Q","white")});
       done();
     } catch (e) {
@@ -15,7 +15,7 @@ describe("Chess tests", () => {
 
   it("Get a square", (done) => {
     try {
-      const chess = new Chess();
+      const chess = new Chess({});
       chess.set({square: "b5", piece: new Piece("Q","white")});
       const square = chess.get({square: "b5"});
       assert(square.piece.name === "Q" && square.piece.color === "white");
@@ -27,7 +27,7 @@ describe("Chess tests", () => {
 
   it("Get total number of moves", (done) => {
     try {
-      const chess = new Chess();
+      const chess = new Chess({});
       chess.move({from:"g2",to:"g4"});
       chess.move({from:"g4",to:"g5"});
       chess.move({from:"g1",to:"f3"});
@@ -40,7 +40,7 @@ describe("Chess tests", () => {
 
   it("Get FEN notation", (done) => {
     try {
-      const chess = new Chess();
+      const chess = new Chess({});
       chess.move({from:"g2",to:"g4"});
       chess.move({from:"g7",to:"g5"});
       chess.move({from:"g1",to:"f3"});
@@ -56,7 +56,7 @@ describe("Chess tests", () => {
 
   it("Returns game history", (done) => {
     try {
-      const chess = new Chess();
+      const chess = new Chess({});
       chess.move({from:"f2",to:"f4"});
       chess.move({from:"a7",to:"a5"});
       chess.move({from:"b2",to:"b4"});
@@ -75,7 +75,7 @@ describe("Chess tests", () => {
 
   it("Validates bounds correctly", (done) => {
     try {
-      const chess = new Chess();
+      const chess = new Chess({});
       assert(
           chess.inbounds({square: "a1"})
         && chess.inbounds({square: "a8"})
@@ -92,7 +92,7 @@ describe("Chess tests", () => {
 
   it("Detects check", (done) => {
     try {
-      const chess = new Chess();
+      const chess = new Chess({});
       chess.set({square:"f2",piece: new Piece()});
       chess.set({square:"d7",piece: new Piece()});
       chess.set({square:"a4",piece: new Piece("Q","white")});
@@ -110,7 +110,7 @@ describe("Chess tests", () => {
 
   it("Promotes pawn", (done) => {
     try {
-      const chess = new Chess();
+      const chess = new Chess({});
       chess.set({square:"b1",piece: new Piece()});
       chess.set({square:"b8",piece: new Piece()});
       
@@ -131,7 +131,7 @@ describe("Chess tests", () => {
   
   it("Board white view", (done) => {
     try {
-      const chess = new Chess();
+      const chess = new Chess({});
       const whiteRank = "RNBQKBNR";
       assert(chess.ascii({border:false, unicode:false, rank:false, file: false}).trim().split("\n").pop().replace(/\s/g,"") === whiteRank);
       done();
@@ -142,7 +142,7 @@ describe("Chess tests", () => {
 
   it("Board black view", (done) => {
     try {
-      const chess = new Chess("black");
+      const chess = new Chess({color:"black"});
       const whiteRank = "RNBKQBNR";
       assert(chess.ascii({border:false, unicode:false, rank:false, file: false})
         .split("\n").shift().replace(/\s/g,"") === whiteRank);

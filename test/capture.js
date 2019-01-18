@@ -5,7 +5,7 @@ describe("Capture tests", () => {
   
   it("En passant", (done) => {
     try {
-      const chess = new Chess();
+      const chess = new Chess({});
       let [whiteLeft, whiteRight, blackLeft, blackRight] = Array(4).fill(false);
       let move = null;
   
@@ -46,7 +46,7 @@ describe("Capture tests", () => {
 
   it("Attempt invalid en passant", (done) => {
     try {
-      const chess = new Chess();
+      const chess = new Chess({});
 
       // white en passant to left
       chess.move({from:"f2",to:"f4"});
@@ -63,7 +63,7 @@ describe("Capture tests", () => {
 
   it("You capture", (done) => {
     try {
-        const chess = new Chess();
+        const chess = new Chess({});
         chess.set({square: "b6", piece: new Piece("R","white")});
         let move = chess.move({from: "b6", to: "b7"});
         assert(move === Action.PLAYER_CAPTURE);
@@ -75,7 +75,7 @@ describe("Capture tests", () => {
 
   it("Opponent captures", (done) => {
     try {
-        const chess = new Chess();
+        const chess = new Chess({});
         chess.set({square: "f2", piece: new Piece("B","black")});
         let move = chess.move({from: "f2", to: "g1"});
         assert(move === Action.OPPONENT_CAPTURE);
@@ -87,7 +87,7 @@ describe("Capture tests", () => {
 
   it("You capture king", (done) => {
     try {
-        const chess = new Chess();
+        const chess = new Chess({});
         chess.set({square: "e7", piece: new Piece("R","white")});
         let move = chess.move({from: "e7", to: "e8"});
         assert(move === Action.PLAYER_CAPTURE_KING);
@@ -99,7 +99,7 @@ describe("Capture tests", () => {
 
   it("Opponent captures king", (done) => {
     try {
-        const chess = new Chess();
+        const chess = new Chess({});
         chess.set({square: "d3", piece: new Piece("N","black")});
         let move = chess.move({from: "d3", to: "e1"});
         assert(move === Action.OPPONENT_CAPTURE_KING);

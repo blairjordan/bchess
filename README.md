@@ -9,7 +9,7 @@ Yet another chess engine.
 Simply include the library to start using it:
 
     const { Chess } = require("./js/chess");
-    const chess = new Chess();
+    const chess = new Chess({});
 
 ## API
 
