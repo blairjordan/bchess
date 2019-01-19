@@ -377,18 +377,18 @@ class Chess {
       return prev;
     }, {black: [], white: []});
     
-    const subtract = color => {
+    const missing = color => {
       return [...FIRST_RANK, ...Array(8).fill(PAWN)].filter(p => {
-         const f = color.indexOf(p);
-         if (f === -1)
-             return true;
-         color.splice(f, 1);
+        const f = color.indexOf(p);
+        if (f === -1)
+            return true;
+        color.splice(f, 1);
       });
     };
 
-    return { 
-      black: subtract(current.black), 
-      white: subtract(current.white),
+    return {
+      black: missing(current.black),
+      white: missing(current.white),
     };
   }
 
@@ -397,8 +397,8 @@ class Chess {
     this.history.push({
       from: {rank: from.rank, file: from.file}, 
       to: {rank: to.rank, file: to.file}, 
-      piece: from.piece, 
-      capture, 
+      piece: Object.assign({}, from.piece), 
+      capture: (capture ? Object.assign({},capture.piece) : null), 
       action,
       modifiers
     });
@@ -487,7 +487,7 @@ class Chess {
           modifiers.to.fileIdx = -2;
         }
       } else {
-        capture = to.piece;
+        capture = to;
         if (to.piece.color === this.theirColor) {
           if (to.piece.name === KING)
             action = Action.PLAYER_CAPTURE_KING;
@@ -503,7 +503,7 @@ class Chess {
     } else if (from.piece.name === PAWN && Chess.fileIdx(from.file) !== Chess.fileIdx(to.file)) {
       // moved diagonal into an empty square, en passant
       action = Action.EN_PASSANT;
-      capture = this._get(to.rank+((from.piece.color === WHITE) ? -1 : 1), to.file).piece;
+      capture = this._get(to.rank+((from.piece.color === WHITE) ? -1 : 1), to.file);
     }
 
     // check pawn promotion
