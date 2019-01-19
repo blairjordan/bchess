@@ -242,14 +242,8 @@ class Chess {
     this.Moves = new Move(this);
     [this.myColor, this.theirColor] = (color === BLACK) ? [BLACK, WHITE] : [WHITE, BLACK];
     this.history = [];
-    this.score = {white: [], black: []};  // TODO: Change approach and calc each time from missing pieces. This will allow scoring a game passed in using fen.
     this.init();
-
-    if (fen)
-      this.input(fen);
-    else
-      this.fill(); // TODO: Get rid of this function
-
+    this.input(fen || "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
     this.moves = 0;
   }
 
@@ -268,22 +262,11 @@ class Chess {
         })()
       )
     );
-  }
 
-  piece(rankIdx, colIdx, color) {
-    let name = "";
-    if (((color === BLACK) && rankIdx === 0) || (((color === WHITE) && rankIdx === 7)))
-      name = FIRST_RANK[colIdx];
-    if (((color === BLACK) && rankIdx === 1) || (((color === WHITE) && rankIdx === 6)))
-      name = PAWN;
-    return name ? new Piece(name, color) : null;
-  }
-
-  fill() {
     this._board.forEach((b, r) => {
       b.forEach((j, f) => {
         const loc = this._board[r][f];
-        loc.piece = this.piece(r, f, WHITE) || this.piece(r, f, BLACK) || new Piece();
+        loc.piece = new Piece();
         loc.color = (r % 2 === f % 2) ? WHITE : BLACK;
         loc.rank = (r - HEIGHT) * -1;
         loc.file = FILES[f];
@@ -363,8 +346,8 @@ class Chess {
           if (!isNaN(parseInt(c))) {
             skip+= parseInt(c);
           } else {
-            let color = (c == c.toUpperCase()) ? WHITE : BLACK;
-            this.set({square: `${FILES[skip]}${HEIGHT-k}`, piece: new Piece(c, color)});
+            let color = (c === c.toUpperCase()) ? WHITE : BLACK;
+            this.set({square: `${FILES[skip]}${HEIGHT-k}`, piece: new Piece(c.toUpperCase(), color)});
             skip++;
           }
         });
@@ -386,25 +369,39 @@ class Chess {
     return `${border ? line : ""}${board}${border ? line : ""}${file ? files : ""}`;
   }
 
+  // return taken pieces for both colors
+  score() {
+    const current = this.flatten().reduce((prev, curr) => {
+      if (curr.piece.isSet())
+        prev[curr.piece.color].push(curr.piece.name);
+      return prev;
+    }, {black: [], white: []});
+    
+    const subtract = color => {
+      return [...FIRST_RANK, ...Array(8).fill(PAWN)].filter(p => {
+         const f = color.indexOf(p);
+         if (f === -1)
+             return true;
+         color.splice(f, 1);
+      });
+    };
+
+    return { 
+      black: subtract(current.black), 
+      white: subtract(current.white),
+    };
+  }
+
   _log(opts) {
-    const {from, to, action, modifiers} = opts;
-    const captured = ([Action.PLAYER_CAPTURE,
-                       Action.PLAYER_CAPTURE_KING,
-                       Action.OPPONENT_CAPTURE,
-                       Action.OPPONENT_CAPTURE_KING]
-      .includes(action)) ? to.piece : null;
+    const {from, to, action, modifiers, capture} = opts;
     this.history.push({
       from: {rank: from.rank, file: from.file}, 
       to: {rank: to.rank, file: to.file}, 
       piece: from.piece, 
-      captured, 
+      capture, 
       action,
       modifiers
     });
-  }
-
-  _score(opts) {
-    this.score[opts.piece.color].push(opts.piece);
   }
 
   _get(rank, file) { return this._board[Chess.rankIdx(rank)][Chess.fileIdx(file)]; }
@@ -490,7 +487,7 @@ class Chess {
           modifiers.to.fileIdx = -2;
         }
       } else {
-        this._score({piece: to.piece}); // TODO: Move scoring out of _action
+        capture = to.piece;
         if (to.piece.color === this.theirColor) {
           if (to.piece.name === KING)
             action = Action.PLAYER_CAPTURE_KING;
@@ -506,9 +503,7 @@ class Chess {
     } else if (from.piece.name === PAWN && Chess.fileIdx(from.file) !== Chess.fileIdx(to.file)) {
       // moved diagonal into an empty square, en passant
       action = Action.EN_PASSANT;
-      const c = this._get(to.rank+((from.piece.color === WHITE) ? -1 : 1), to.file);
-      this._score({piece: c.piece}); // TODO: Move scoring out of _action
-      capture = c;
+      capture = this._get(to.rank+((from.piece.color === WHITE) ? -1 : 1), to.file).piece;
     }
 
     // check pawn promotion
@@ -545,7 +540,7 @@ class Chess {
     const available = this._available(from);
     if (available.find(a => (((a.rank) === to.rank) && ((a.file) === to.file)))) {
       const { action, modifiers, capture } = this._action(from, to);
-      this._log({from, to, action, modifiers});
+      this._log({from, to, action, modifiers, capture});
       if (action & (Action.CASTLE_KING | Action.CASTLE_QUEEN)) {
         // get new locations
         const kingSquare = this._get(from.rank + modifiers.from.rankIdx, FILES[Chess.fileIdx(from.file) + modifiers.from.fileIdx]);
@@ -621,7 +616,7 @@ class Chess {
     this._get(...Chess._split(opts.square)).piece = opts.piece;
   }
   
-  // return pieces causing ambiguity
+  // get pieces causing ambiguity
   ambiguousSAN(from, to) {
     return (
       this.find({name: from.piece.name, color: from.piece.color}) // find pieces of same type
@@ -667,6 +662,7 @@ class Chess {
     // include pawn file if capture
     // add check +
     // add checkmate #
+    // (requires finishing undo function)
     
     return `${from.piece.name}${fromCoord}${capture}${to.file}${to.rank}`
   }

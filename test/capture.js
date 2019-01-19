@@ -14,28 +14,28 @@ describe("Capture tests", () => {
       chess.move({from:"f4",to:"f5"});
       chess.move({from:"e7",to:"e5"});
       move = chess.move({from:"f5",to:"e6"});
-      whiteLeft = chess.score.black.pop().name === "P" && move === Action.EN_PASSANT;
+      whiteLeft = chess.history.pop().capture.name === "P" && move === Action.EN_PASSANT;
   
       // white en passant to right
       chess.move({from:"b2",to:"b4"});
       chess.move({from:"b4",to:"b5"});
       chess.move({from:"c7",to:"c5"});
       move = chess.move({from:"b5",to:"c6"});
-      whiteRight = chess.score.black.pop().name === "P" && move === Action.EN_PASSANT;
+      whiteRight = chess.history.pop().capture.name === "P" && move === Action.EN_PASSANT;
   
       // black en passant to left
       chess.move({from:"b7",to:"b5"});
       chess.move({from:"b5",to:"b4"});
       chess.move({from:"a2",to:"a4"});
       move = chess.move({from:"b4",to:"a3"});
-      blackLeft = chess.score.white.pop().name === "P" && move === Action.EN_PASSANT;
+      blackLeft = chess.history.pop().capture.name === "P" && move === Action.EN_PASSANT;
   
       // black en passant to right
       chess.move({from:"g7",to:"g5"});
       chess.move({from:"g5",to:"g4"});
       chess.move({from:"h2",to:"h4"});
       move = chess.move({from:"g4",to:"h3"});
-      blackRight = chess.score.white.pop().name === "P" && move === Action.EN_PASSANT;
+      blackRight = chess.history.pop().capture.name === "P" && move === Action.EN_PASSANT;
   
       assert(whiteLeft && whiteRight && blackLeft && blackRight);
       done();

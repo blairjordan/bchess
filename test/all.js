@@ -92,16 +92,11 @@ describe("Chess tests", () => {
 
   it("Detects check", (done) => {
     try {
-      const chess = new Chess({});
-      chess.set({square:"f2",piece: new Piece()});
-      chess.set({square:"d7",piece: new Piece()});
-      chess.set({square:"a4",piece: new Piece("Q","white")});
-      chess.set({square:"h4",piece: new Piece("Q","black")});
-      
-      const check = chess.check();
-
-      assert(check.pop().checked.piece.color === "white"
-          && check.pop().checked.piece.color === "black");
+      let chess = new Chess({fen:"rnb1kbnr/ppp2ppp/8/3pP3/5P1q/8/PPP1P1PP/RNBQKBNR"});
+      const checkWhite = chess.check().pop().checked.piece.color === "white";
+      chess = new Chess({fen:"rnbqkbnr/ppppp1pp/8/5p1Q/4P3/8/PPPP1PPP/RNB1KBNR"});
+      const checkBlack = chess.check().pop().checked.piece.color === "black";
+      assert(checkWhite && checkBlack);
       done();
     } catch (e) {
       done(e);
