@@ -90,3 +90,9 @@ You can also initialise a new game using FEN notation:
 Return the total move count (completed turns)
 
     chess.moves
+
+### undo
+
+Undo the most recent move
+
+    chess.undo()

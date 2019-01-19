@@ -514,28 +514,9 @@ class Chess {
     return { action, modifiers, capture };
   }
 
-  // TODO: required to test future state for SAN notation before a move is made
-  undo() {
-    let move = this.history.pop();
-    
-    if (typeof move === "undefined")
-      return;
-
-    let piece = this.get({square:`${move.to.file}${move.to.rank}`}).piece;
-    piece.moves--;
-    if (piece.action === Action.PROMOTE)
-      piece.name = PAWN;
-    
-    this.get({square:`${move.from.file}${move.from.rank}`}).piece = piece;
-    let orig = this.get({square:`${move.to.file}${move.to.rank}`})
-      
-    if (move.action & (Action.EN_PASSANT))
-      this.get({square: `${move.to.file}${move.to.rank+((move.piece.color === WHITE) ? -1 : 1)}`}).piece = move.capture;
-
-    if (move.action & (Action.PLAYER_CAPTURE | Action.PLAYER_CAPTURE_KING | Action.OPPONENT_CAPTURE | Action.OPPONENT_CAPTURE_KING))
-      orig.piece = move.capture;
-    else 
-      orig.piece = new Piece();
+  static _split(str) {
+    const [file, rank] = str.split("");
+    return [rank, file];
   }
 
   // move piece at source square to target square
@@ -572,12 +553,50 @@ class Chess {
       return Action.INVALID_ACTION;
     }
   }
-
-  static _split(str) {
-    const [file, rank] = str.split("");
-    return [rank, file];
-  }
   
+  // undo the last move
+  undo() {
+    const move = this.history.pop();
+
+    if (typeof move === "undefined")
+      return;
+    
+    this.moves--;
+
+    const [from, to] = [this.get({square:`${move.from.file}${move.from.rank}`}),this.get({square:`${move.to.file}${move.to.rank}`})]
+    
+    this.get({square:`${move.from.file}${move.from.rank}`}).piece = to.piece;
+      
+    if (move.action & (Action.CASTLE_KING | Action.CASTLE_QUEEN)) {
+      const kingSquare = this._get(move.from.rank + move.modifiers.from.rankIdx, FILES[Chess.fileIdx(move.from.file) + move.modifiers.from.fileIdx]);
+      const rookSquare = this._get(move.to.rank + move.modifiers.to.rankIdx, FILES[Chess.fileIdx(move.to.file) + move.modifiers.to.fileIdx]);
+
+      from.piece = kingSquare.piece;
+      to.piece = rookSquare.piece;
+      from.piece.moves--;
+      to.piece.moves--;
+
+      kingSquare.piece = new Piece();
+      rookSquare.piece = new Piece();
+      return;
+    }
+
+    to.piece.moves--;
+    
+    if (move.action & (Action.EN_PASSANT))
+      this.get({square: `${move.to.file}${move.to.rank+((move.piece.color === WHITE) ? -1 : 1)}`}).piece = move.capture;
+
+    if (move.action & (Action.PLAYER_CAPTURE | Action.PLAYER_CAPTURE_KING | Action.OPPONENT_CAPTURE | Action.OPPONENT_CAPTURE_KING))
+      to.piece = move.capture;
+    else 
+      to.piece = new Piece();
+
+    if (move.action & (Action.PROMOTE)) {
+      from.piece.name = PAWN;
+      from.piece.isPromoted = false;
+    }
+  }
+
   // return reversed board (black perspective)
   reverse() {
     let reversed = [...this._board].reverse();
@@ -665,7 +684,6 @@ class Chess {
     // include pawn file if capture
     // add check +
     // add checkmate #
-    // (requires finishing undo function)
     
     return `${from.piece.name}${fromCoord}${capture}${to.file}${to.rank}`
   }

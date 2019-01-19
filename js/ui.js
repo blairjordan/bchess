@@ -49,6 +49,7 @@ const refresh = () => {
     $(`*.square[data-rank="${c.checked.rank}"][data-file="${c.checked.file}"]`).addClass("checked");
   });
   refreshScore();
+  $('#movecount').text(chess.moves);
 };
 
 let source = null;
