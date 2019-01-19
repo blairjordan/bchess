@@ -397,8 +397,8 @@ class Chess {
     this.history.push({
       from: {rank: from.rank, file: from.file}, 
       to: {rank: to.rank, file: to.file}, 
-      piece: Object.assign({}, from.piece), 
-      capture: (capture ? Object.assign({},capture.piece) : null), 
+      piece: Object.assign(Object.create(Object.getPrototypeOf(from.piece)),from.piece), 
+      capture: (capture ? Object.assign(Object.create(Object.getPrototypeOf(capture.piece)),capture.piece) : null), 
       action,
       modifiers
     });
@@ -508,7 +508,7 @@ class Chess {
 
     // check pawn promotion
     if ( from.piece.name === PAWN &&  
-         ((to.rank === 8 && from.piece.color === WHITE)
+        ((to.rank === 8 && from.piece.color === WHITE)
         || (to.rank === 1 && from.piece.color === BLACK)) )
       action |= Action.PROMOTE;
     return { action, modifiers, capture };
@@ -529,10 +529,13 @@ class Chess {
     this.get({square:`${move.from.file}${move.from.rank}`}).piece = piece;
     let orig = this.get({square:`${move.to.file}${move.to.rank}`})
       
-      if (move.action & (Action.PLAYER_CAPTURE | Action.PLAYER_CAPTURE_KING | Action.OPPONENT_CAPTURE | Action.OPPONENT_CAPTURE_KING))
-        orig.piece = move.captured;
-      else 
-        orig.piece = new Piece();
+    if (move.action & (Action.EN_PASSANT))
+      this.get({square: `${move.to.file}${move.to.rank+((move.piece.color === WHITE) ? -1 : 1)}`}).piece = move.capture;
+
+    if (move.action & (Action.PLAYER_CAPTURE | Action.PLAYER_CAPTURE_KING | Action.OPPONENT_CAPTURE | Action.OPPONENT_CAPTURE_KING))
+      orig.piece = move.capture;
+    else 
+      orig.piece = new Piece();
   }
 
   // move piece at source square to target square
