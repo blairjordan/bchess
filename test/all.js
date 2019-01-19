@@ -151,4 +151,19 @@ describe("Chess tests", () => {
       done(e);
     }
   });
+
+  it ("Board deep copy", (done) => {
+    try {
+      const chess = new Chess({});
+      let boardCopy = chess.copy();
+      boardCopy[0][0].piece = new Piece("K","white");
+      let before = chess._board[0][0].piece.name !== "K";
+      chess._board = boardCopy;
+      let after = chess._board[0][0].piece.name === "K";
+      assert(before && after);
+      done();
+    } catch (e) {
+      done(e);
+    }
+  });
 });

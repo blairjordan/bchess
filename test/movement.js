@@ -18,6 +18,8 @@ describe("Movement tests", () => {
     try {
       let [whiteQueen, whiteKing, blackQueen, blackKing] = Array(4).fill(false);
       let action = null;
+
+      //todo: change to let chess = new Chess({fen:"r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R"});
       
       // castle queen side white
       let chess = new Chess({});

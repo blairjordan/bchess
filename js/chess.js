@@ -358,14 +358,14 @@ class Chess {
 
   input(fen) {
     fen.split("/").forEach((l,k) => {
-        let skipped = 0;
+        let skip = 0;
         l.split("").forEach((c,i) => {
           if (!isNaN(parseInt(c))) {
-            skipped+= parseInt(c);
+            skip+= parseInt(c);
           } else {
             let color = (c == c.toUpperCase()) ? WHITE : BLACK;
-            this.set({square: `${FILES[skipped]}${HEIGHT-k}`, piece: new Piece(c, color)});
-            skipped++;
+            this.set({square: `${FILES[skip]}${HEIGHT-k}`, piece: new Piece(c, color)});
+            skip++;
           }
         });
     });
@@ -387,7 +387,7 @@ class Chess {
   }
 
   _log(opts) {
-    const {from, to, action} = opts;
+    const {from, to, action, modifiers} = opts;
     const captured = ([Action.PLAYER_CAPTURE,
                        Action.PLAYER_CAPTURE_KING,
                        Action.OPPONENT_CAPTURE,
@@ -398,7 +398,8 @@ class Chess {
       to: {rank: to.rank, file: to.file}, 
       piece: from.piece, 
       captured, 
-      action
+      action,
+      modifiers
     });
   }
 
@@ -518,12 +519,33 @@ class Chess {
     return { action, modifiers, capture };
   }
 
+  // TODO: required to test future state for SAN notation before a move is made
+  undo() {
+    let move = this.history.pop();
+    
+    if (typeof move === "undefined")
+      return;
+
+    let piece = this.get({square:`${move.to.file}${move.to.rank}`}).piece;
+    piece.moves--;
+    if (piece.action === Action.PROMOTE)
+      piece.name = PAWN;
+    
+    this.get({square:`${move.from.file}${move.from.rank}`}).piece = piece;
+    let orig = this.get({square:`${move.to.file}${move.to.rank}`})
+      
+      if (move.action & (Action.PLAYER_CAPTURE | Action.PLAYER_CAPTURE_KING | Action.OPPONENT_CAPTURE | Action.OPPONENT_CAPTURE_KING))
+        orig.piece = move.captured;
+      else 
+        orig.piece = new Piece();
+  }
+
   // move piece at source square to target square
   _move(from, to, promote = null) {
     const available = this._available(from);
     if (available.find(a => (((a.rank) === to.rank) && ((a.file) === to.file)))) {
       const { action, modifiers, capture } = this._action(from, to);
-      this._log({from, to,action});
+      this._log({from, to, action, modifiers});
       if (action & (Action.CASTLE_KING | Action.CASTLE_QUEEN)) {
         // get new locations
         const kingSquare = this._get(from.rank + modifiers.from.rankIdx, FILES[Chess.fileIdx(from.file) + modifiers.from.fileIdx]);
@@ -558,14 +580,18 @@ class Chess {
     return [rank, file];
   }
   
-  // display board from black perspective
+  // return reversed board (black perspective)
   reverse() {
     let reversed = [...this._board].reverse();
-    reversed.forEach((r,idx) => { 
-      let rank = [...r].reverse(); 
-      reversed[idx] = rank;
+    reversed.forEach((r,i) => { 
+      reversed[i] = [...r].reverse();
     });
     return reversed;
+  }
+
+  // return a copy of the board
+  copy() {
+    return this._board.map(r => r.slice().map(f=>Object.assign(Object.create(Object.getPrototypeOf(f)),f)));
   }
 
   // returns true if a square exists, else false
