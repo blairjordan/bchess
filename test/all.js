@@ -103,6 +103,14 @@ describe("Chess tests", () => {
     }
   });
 
+  // TODO: Detect checkmate
+
+  // black checkmate examples:
+  // "4k3/4P3/3PK3/8/8/8/8/8" 
+  // "R5k1/5ppp/8/8/8/8/8/R3K3"
+  // "r4r2/ppp1Nppk/8/7R/8/1P6/P4PPP/6K1"
+  // "7k/p6p/1p6/8/8/8/BB3K2/8"
+
   it("Promotes pawn", (done) => {
     try {
       const chess = new Chess({});

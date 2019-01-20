@@ -95,9 +95,10 @@ class Move {
   castle(r, f) {
     let moves = [];
     let [q, k] = [true, true];
-
+    const king = this.chess._get(Chess.rankIdx(r), FILES[f]).piece;
+    
     // king has moved?
-    if (this.chess._get(Chess.rankIdx(r), FILES[f]).piece.hasMoved())
+    if (king.hasMoved())
       [q, k] = [false, false];
 
     // right side
@@ -114,14 +115,14 @@ class Move {
     // where the rooks should be
     let [rrook, lrook] =
       [
-        this.chess._get(Chess.rankIdx(r), FILES[WIDTH - 1]),
-        this.chess._get(Chess.rankIdx(r), FILES[0])
+        this.chess._get(Chess.rankIdx(r), FILES[WIDTH - 1]).piece,
+        this.chess._get(Chess.rankIdx(r), FILES[0]).piece
       ];
 
     // rooks moved?
-    if ((rrook.piece.name !== ROOK) || (rrook.piece.hasMoved()))
+    if ((rrook.name !== ROOK) || (rrook.hasMoved()) || (rrook.color !== king.color))
       k = false;
-    if ((lrook.piece.name !== ROOK) || (lrook.piece.hasMoved()))
+    if ((lrook.name !== ROOK) || (lrook.hasMoved()) || (lrook.color !== king.color))
       q = false;
 
     if (k)
@@ -329,12 +330,14 @@ class Chess {
 
   // return checkmate positions
   checkmate(opts) {
-    let checkmated = [];
-    this.find({...opts, name: KING}).forEach(f => {
-      this._available(f).forEach(a => {
-        this._move(f, a);
-        // test here
+    let checkmated = { white: true, black: true };
+    this.find({...opts}).forEach(f => {
+      this._available(f).every(a => {
+        const action = this._move(f, a);
+        if (this.check({}).filter(c => c.checked.piece.color === a.piece.color).length === 0)
+          checkmated[a.piece.color] = false;
         this.undo();
+        return checkmated[f.piece.color];
       });
     });
   }
