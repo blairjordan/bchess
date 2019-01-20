@@ -43,6 +43,11 @@ const Direction = {
   DOWN_RIGHT: "DOWN_RIGHT",
   L: "L"
 };
+const SAN = {
+  CAPTURE: "x",
+  CHECK: "+",
+  CHECKMATE: "#"
+}
 const Action = {
   MOVE: 1,
   PLAYER_CAPTURE: 2,
@@ -313,13 +318,25 @@ class Chess {
   // return checked positions
   check(opts = {}) {
     let checked = [];
-    this.find(opts).forEach(o => {
-      this._available(o).forEach(m => {
-        if (m.piece.name === KING)
-          checked.push({checked:m,by:o});
+    this.find(opts).forEach(f => {
+      this._available(f).forEach(a => {
+        if (a.piece.name === KING)
+          checked.push({ checked:a, by:f });
       });
     });
     return checked;
+  }
+
+  // return checkmate positions
+  checkmate(opts) {
+    let checkmated = [];
+    this.find({...opts, name: KING}).forEach(f => {
+      this._available(f).forEach(a => {
+        this._move(f, a);
+        // test here
+        this.undo();
+      });
+    });
   }
 
   fen() {
@@ -466,44 +483,50 @@ class Chess {
   // return action type and position modifiers
   _action(from, to) {
     let action = Action.MOVE;
+
+    if (!this._available(from).find(a => (((a.rank) === to.rank) && ((a.file) === to.file))))
+      action = Action.INVALID_ACTION;
+
     let modifiers = {
       from: { rankIdx: 0, fileIdx: 0 },
       to: { rankIdx: 0, fileIdx: 0 }
     };
     let capture = null;
-    if (to.piece.isSet()) {
-      if ((from.piece.color === to.piece.color)
-        && (from.piece.name === KING)
-        && (to.piece.name === ROOK)) {
-        if (Chess.fileIdx(from.file) > Chess.fileIdx(to.file)) {
-          // queen side
-          action = Action.CASTLE_QUEEN;
-          modifiers.from.fileIdx = -2;
-          modifiers.to.fileIdx = 3;
+    if (!(action & Action.INVALID_ACTION)) {
+      if (to.piece.isSet()) {
+        if ((from.piece.color === to.piece.color)
+          && (from.piece.name === KING)
+          && (to.piece.name === ROOK)) {
+          if (Chess.fileIdx(from.file) > Chess.fileIdx(to.file)) {
+            // queen side
+            action = Action.CASTLE_QUEEN;
+            modifiers.from.fileIdx = -2;
+            modifiers.to.fileIdx = 3;
+          } else {
+            // king side
+            action = Action.CASTLE_KING;
+            modifiers.from.fileIdx = 2;
+            modifiers.to.fileIdx = -2;
+          }
         } else {
-          // king side
-          action = Action.CASTLE_KING;
-          modifiers.from.fileIdx = 2;
-          modifiers.to.fileIdx = -2;
+          capture = to;
+          if (to.piece.color === this.theirColor) {
+            if (to.piece.name === KING)
+              action = Action.PLAYER_CAPTURE_KING;
+            else
+              action = Action.PLAYER_CAPTURE;
+          } else {
+            if (to.piece.name === KING)
+              action = Action.OPPONENT_CAPTURE_KING;
+            else
+              action = Action.OPPONENT_CAPTURE;
+          }
         }
-      } else {
-        capture = to;
-        if (to.piece.color === this.theirColor) {
-          if (to.piece.name === KING)
-            action = Action.PLAYER_CAPTURE_KING;
-          else
-            action = Action.PLAYER_CAPTURE;
-        } else {
-          if (to.piece.name === KING)
-            action = Action.OPPONENT_CAPTURE_KING;
-          else
-            action = Action.OPPONENT_CAPTURE;
-        }
+      } else if (from.piece.name === PAWN && Chess.fileIdx(from.file) !== Chess.fileIdx(to.file)) {
+        // moved diagonal into an empty square, en passant
+        action = Action.EN_PASSANT;
+        capture = this._get(to.rank+((from.piece.color === WHITE) ? -1 : 1), to.file);
       }
-    } else if (from.piece.name === PAWN && Chess.fileIdx(from.file) !== Chess.fileIdx(to.file)) {
-      // moved diagonal into an empty square, en passant
-      action = Action.EN_PASSANT;
-      capture = this._get(to.rank+((from.piece.color === WHITE) ? -1 : 1), to.file);
     }
 
     // check pawn promotion
@@ -522,36 +545,36 @@ class Chess {
   // move piece at source square to target square
   _move(from, to, promote = null) {
     const available = this._available(from);
-    if (available.find(a => (((a.rank) === to.rank) && ((a.file) === to.file)))) {
-      const { action, modifiers, capture } = this._action(from, to);
-      this._log({from, to, action, modifiers, capture});
-      if (action & (Action.CASTLE_KING | Action.CASTLE_QUEEN)) {
-        // get new locations
-        const kingSquare = this._get(from.rank + modifiers.from.rankIdx, FILES[Chess.fileIdx(from.file) + modifiers.from.fileIdx]);
-        const rookSquare = this._get(to.rank + modifiers.to.rankIdx, FILES[Chess.fileIdx(to.file) + modifiers.to.fileIdx]);
-        // assign pieces to squares
-        kingSquare.piece = from.piece;
-        rookSquare.piece = to.piece;
-        kingSquare.piece.moves++;
-        rookSquare.piece.moves++;
-        to.piece = new Piece();
-      } else {
-        if (action === Action.EN_PASSANT) {
-          capture.piece = new Piece();
-        }
-        if ((action & Action.PROMOTE) === Action.PROMOTE) {
-          from.piece.name = ([QUEEN,KNIGHT,ROOK,BISHOP].includes(promote)) ? promote : QUEEN;
-          from.piece.isPromoted = true;
-        }
-        to.piece = from.piece;
-        to.piece.moves++;
-      }
-      from.piece = new Piece();
-      this.moves++;
+    const { action, modifiers, capture } = this._action(from, to);
+
+    if (action & Action.INVALID_ACTION)
       return action;
+
+    this._log({from, to, action, modifiers, capture});
+    if (action & (Action.CASTLE_KING | Action.CASTLE_QUEEN)) {
+      // get new locations
+      const kingSquare = this._get(from.rank + modifiers.from.rankIdx, FILES[Chess.fileIdx(from.file) + modifiers.from.fileIdx]);
+      const rookSquare = this._get(to.rank + modifiers.to.rankIdx, FILES[Chess.fileIdx(to.file) + modifiers.to.fileIdx]);
+      // assign pieces to squares
+      kingSquare.piece = from.piece;
+      rookSquare.piece = to.piece;
+      kingSquare.piece.moves++;
+      rookSquare.piece.moves++;
+      to.piece = new Piece();
     } else {
-      return Action.INVALID_ACTION;
+      if (action === Action.EN_PASSANT) {
+        capture.piece = new Piece();
+      }
+      if ((action & Action.PROMOTE) === Action.PROMOTE) {
+        from.piece.name = ([QUEEN,KNIGHT,ROOK,BISHOP].includes(promote)) ? promote : QUEEN;
+        from.piece.isPromoted = true;
+      }
+      to.piece = from.piece;
+      to.piece.moves++;
     }
+    from.piece = new Piece();
+    this.moves++;
+    return action;
   }
   
   // undo the last move
@@ -583,7 +606,7 @@ class Chess {
 
     to.piece.moves--;
     
-    if (move.action & (Action.EN_PASSANT))
+    if (move.action & Action.EN_PASSANT)
       this.get({square: `${move.to.file}${move.to.rank+((move.piece.color === WHITE) ? -1 : 1)}`}).piece = move.capture;
 
     if (move.action & (Action.PLAYER_CAPTURE | Action.PLAYER_CAPTURE_KING | Action.OPPONENT_CAPTURE | Action.OPPONENT_CAPTURE_KING))
@@ -591,7 +614,7 @@ class Chess {
     else 
       to.piece = new Piece();
 
-    if (move.action & (Action.PROMOTE)) {
+    if (move.action & Action.PROMOTE) {
       from.piece.name = PAWN;
       from.piece.isPromoted = false;
     }
