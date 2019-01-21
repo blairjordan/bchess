@@ -5,7 +5,7 @@ describe("Board tests", () => {
 
   it("Set a square", (done) => {
     try {
-      const chess = new Chess({});
+      const chess = new Chess();
       chess.set({square: "b5", piece: new Piece("Q","white")});
       done();
     } catch (e) {
@@ -15,7 +15,7 @@ describe("Board tests", () => {
 
   it("Get a square", (done) => {
     try {
-      const chess = new Chess({});
+      const chess = new Chess();
       chess.set({square: "b5", piece: new Piece("Q","white")});
       const square = chess.get({square: "b5"});
       assert(square.piece.name === "Q" && square.piece.color === "white");
@@ -27,7 +27,7 @@ describe("Board tests", () => {
 
   it("Validates bounds correctly", (done) => {
     try {
-      const chess = new Chess({});
+      const chess = new Chess();
       assert(
           chess.inbounds({square: "a1"})
         && chess.inbounds({square: "a8"})
@@ -44,7 +44,7 @@ describe("Board tests", () => {
 
   it("Board white view", (done) => {
     try {
-      const chess = new Chess({});
+      const chess = new Chess();
       const whiteRank = "RNBQKBNR";
       assert(chess.ascii({border:false, unicode:false, rank:false, file: false}).trim().split("\n").pop().replace(/\s/g,"") === whiteRank);
       done();
@@ -67,7 +67,7 @@ describe("Board tests", () => {
 
   it ("Board deep copy", (done) => {
     try {
-      const chess = new Chess({});
+      const chess = new Chess();
       let boardCopy = chess.copy();
       boardCopy[0][0].piece = new Piece("K","white");
       let before = chess._board[0][0].piece.name !== "K";

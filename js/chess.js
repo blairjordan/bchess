@@ -245,13 +245,13 @@ class Move {
 }
 
 class Chess {
-  constructor(opts) {
+  constructor(opts = {}) {
     const { color, fen } = opts; 
     this.Moves = new Move(this);
     [this.myColor, this.theirColor] = (color === BLACK) ? [BLACK, WHITE] : [WHITE, BLACK];
     this.history = [];
     this.init();
-    this.input(fen || START_FEN);
+    this.input({fen: fen || START_FEN});
     this.moves = 0;
   }
 
@@ -363,7 +363,8 @@ class Chess {
     .join("/");
   }
 
-  input(fen) {
+  input(opts) {
+    const { fen } = opts;
     fen.split("/").forEach((l,k) => {
         let skip = 0;
         l.split("").forEach((c,i) => {
@@ -378,7 +379,7 @@ class Chess {
     });
   }
 
-  ascii(opts) {
+  ascii(opts = {}) {
     const { unicode, border = true, file = true, rank = true } = opts;
     const line = "  +--------------------------+\r\n";
     const files = `${border ? "     " : "  "}${(this.myColor === WHITE) ? FILES.join("  ") : FILES.slice().reverse().join("  ")}`;

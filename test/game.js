@@ -5,7 +5,7 @@ describe("Game tests", () => {
 
   it("Get total number of moves", (done) => {
     try {
-      const chess = new Chess({});
+      const chess = new Chess();
       chess.move({from:"g2",to:"g4"});
       chess.move({from:"g4",to:"g5"});
       chess.move({from:"g1",to:"f3"});
@@ -18,7 +18,7 @@ describe("Game tests", () => {
 
   it("Get FEN notation", (done) => {
     try {
-      const chess = new Chess({});
+      const chess = new Chess();
       chess.move({from:"g2",to:"g4"});
       chess.move({from:"g7",to:"g5"});
       chess.move({from:"g1",to:"f3"});
@@ -34,7 +34,7 @@ describe("Game tests", () => {
 
   it("Returns game history", (done) => {
     try {
-      const chess = new Chess({});
+      const chess = new Chess();
       chess.move({from:"f2",to:"f4"});
       chess.move({from:"a7",to:"a5"});
       chess.move({from:"b2",to:"b4"});
@@ -85,6 +85,46 @@ describe("Game tests", () => {
       let white2 = chess.checkmate().white && !chess.checkmate().black;
 
       assert (black1 && black2 && black3 && black4 && white1 && white2);
+
+      done();
+    } catch (e) {
+      done(e);
+    }
+  });
+
+  it("Undo moves", (done) => {
+    try {
+      let chess = new Chess();
+      chess.undo();
+      let start = chess.fen() === "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+
+      chess = new Chess({fen: "rnbqkbnr/pppppppp/8/3P4/8/8/PPP1PPPP/RNBQKBNR"});
+      chess.move({from:"c7", to: "c5"});
+      chess.move({from:"d5", to: "c6"});
+      chess.undo();
+      let en_passant = chess.fen() === "rnbqkbnr/pp1ppppp/8/2pP4/8/8/PPP1PPPP/RNBQKBNR";
+      
+      chess = new Chess({fen:"r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R"});
+      chess.move({from:"e1", to: "a1"});
+      chess.undo();
+      let whiteCastleQueen = chess.fen() === "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R";
+
+      chess = new Chess({fen:"r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R"});
+      chess.move({from:"e1", to: "h1"});
+      chess.undo();
+      let whiteCastleKing = chess.fen() === "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R";
+      
+      chess = new Chess({fen:"r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R"});
+      chess.move({from:"e8", to: "a8"});
+      chess.undo();
+      let blackCastleQueen = chess.fen() === "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R";
+
+      chess = new Chess({fen:"r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R"});
+      chess.move({from:"e8", to: "h8"});
+      chess.undo();
+      let blackCastleKing = chess.fen() === "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R"
+      
+      assert (start && en_passant && whiteCastleQueen && whiteCastleKing && blackCastleQueen && blackCastleKing);
 
       done();
     } catch (e) {

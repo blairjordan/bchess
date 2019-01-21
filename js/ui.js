@@ -1,4 +1,4 @@
-chess = new Chess({});
+chess = new Chess();
 const canvas = $(".canvas");
 let board = chess.board();
 let myturn = true;
