@@ -111,4 +111,25 @@ describe("Movement tests", () => {
       done(e);
     }
   });
+  
+  it("Promotes pawn", (done) => {
+    try {
+      const chess = new Chess({});
+      chess.set({square:"b1",piece: new Piece()});
+      chess.set({square:"b8",piece: new Piece()});
+      
+      chess.set({square:"b7",piece: new Piece("P","white")});
+      chess.set({square:"b2",piece: new Piece("P","black")});
+
+      chess.move({from:"b7",to:"b8",promote:"B"});
+      chess.move({from:"b2",to:"b1",promote:"R"});
+
+      assert (chess.get({square: "b8"}).piece.name === "B"
+           && chess.get({square: "b1"}).piece.name === "R");
+
+      done();
+    } catch (e) {
+      done(e);
+    }
+  });
 });

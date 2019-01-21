@@ -340,6 +340,7 @@ class Chess {
         return checkmated[f.piece.color];
       });
     });
+    return checkmated;
   }
 
   fen() {
