@@ -67,20 +67,24 @@ describe("Game tests", () => {
   it("Detects checkmate", (done) => {
     try {
       let chess = new Chess({fen: "4k3/4P3/3PK3/8/8/8/8/8"});
-      let check1 = chess.checkmate().black && !chess.checkmate().white;
+      let black1 = chess.checkmate().black && !chess.checkmate().white;
       
       chess = new Chess({fen: "R5k1/5ppp/8/8/8/8/8/R3K3"});
-      let check2 = chess.checkmate().black && !chess.checkmate().white;
+      let black2 = chess.checkmate().black && !chess.checkmate().white;
 
       chess = new Chess({fen: "r4r2/ppp1Nppk/8/7R/8/1P6/P4PPP/6K1"});
-      let check3 = chess.checkmate().black && !chess.checkmate().white;
+      let black3 = chess.checkmate().black && !chess.checkmate().white;
 
       chess = new Chess({fen: "7k/p6p/1p6/8/8/8/BB3K2/8"});
-      let check4 = chess.checkmate().black && !chess.checkmate().white;
+      let black4 = chess.checkmate().black && !chess.checkmate().white;
 
-      // TODO: Add in white checkmates
+      chess = new Chess({fen:"r4rk1/1Q1b1pp1/2B2n2/7p/8/bRpP2P1/P1P1Pp1P/2qK3R"});
+      let white1 = chess.checkmate().white && !chess.checkmate().black;
 
-      assert (check1 && check2 && check3 && check4);
+      chess = new Chess({fen:"rnb1kbnr/pppp1ppp/8/4p3/6Pq/5p2/PPPPP2P/RNBQKBNR"});
+      let white2 = chess.checkmate().white && !chess.checkmate().black;
+
+      assert (black1 && black2 && black3 && black4 && white1 && white2);
 
       done();
     } catch (e) {

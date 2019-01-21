@@ -28,7 +28,8 @@ const HEIGHT = 8;
 
 const [ROOK, KNIGHT, BISHOP, QUEEN, KING, PAWN] = ["R", "N", "B", "Q", "K", "P"];
 const FIRST_RANK = [ROOK, KNIGHT, BISHOP, QUEEN, KING, BISHOP, KNIGHT, ROOK];
-const FILES = ["a", "b", "c", "d", "e", "f", "g", "h"];
+const [A, B, C, D, E, F, G, H] = ["a", "b", "c", "d", "e", "f", "g", "h"]; 
+const FILES = [A, B, C, D, E, F, G, H];
 const [WHITE, BLACK] = ["white", "black"];
 const Direction = {
   CASTLE_KING: "CASTLE_KING",
@@ -69,6 +70,7 @@ const Unicode =
   Q: { black: 0x265B, white: 0x2655 },  
   K: { black: 0x265A, white: 0x2654 }
 };
+const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 
 class Piece {
   constructor(name, color, moves) {
@@ -95,10 +97,10 @@ class Move {
   castle(r, f) {
     let moves = [];
     let [q, k] = [true, true];
-    const king = this.chess._get(Chess.rankIdx(r), FILES[f]).piece;
+    const king = this.chess._get(Chess.rankIdx(r), FILES[f]);
     
     // king has moved?
-    if (king.hasMoved())
+    if (king.file !== E || king.piece.hasMoved())
       [q, k] = [false, false];
 
     // right side
@@ -120,9 +122,9 @@ class Move {
       ];
 
     // rooks moved?
-    if ((rrook.name !== ROOK) || (rrook.hasMoved()) || (rrook.color !== king.color))
+    if ((rrook.name !== ROOK) || (rrook.hasMoved()) || (rrook.color !== king.piece.color))
       k = false;
-    if ((lrook.name !== ROOK) || (lrook.hasMoved()) || (lrook.color !== king.color))
+    if ((lrook.name !== ROOK) || (lrook.hasMoved()) || (lrook.color !== king.piece.color))
       q = false;
 
     if (k)
@@ -249,7 +251,7 @@ class Chess {
     [this.myColor, this.theirColor] = (color === BLACK) ? [BLACK, WHITE] : [WHITE, BLACK];
     this.history = [];
     this.init();
-    this.input(fen || "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+    this.input(fen || START_FEN);
     this.moves = 0;
   }
 
@@ -333,9 +335,10 @@ class Chess {
     let checkmated = { white: true, black: true };
     this.find({...opts}).forEach(f => {
       this._available(f).every(a => {
-        const action = this._move(f, a);
-        if (this.check({}).filter(c => c.checked.piece.color === a.piece.color).length === 0)
-          checkmated[a.piece.color] = false;
+        if (!(this._move(f, a) & (Action.CASTLE_KING | Action.CASTLE_QUEEN))) {
+          if (this.check({}).filter(c => c.checked.piece.color === a.piece.color).length === 0)
+            checkmated[a.piece.color] = false;
+        }
         this.undo();
         return checkmated[f.piece.color];
       });
