@@ -95,6 +95,24 @@ describe("Game tests", () => {
     }
   });
 
+  it("Scores", (done) => {
+    try {
+      let chess = new Chess({fen:"1k6/5pk1/2p3p1/1p2N2p/1b5P/1bn5/2r3P1/2K5"});
+      let score1 = chess.score().white.toString() === "R,B,Q,B,N,R,P,P,P,P,P,P" && chess.score().black.toString() === "Q,N,R,P,P,P";
+
+      chess = new Chess({fen:"5rk1/pp2p3/3p2pb/2pP4/2q5/3b1B1P/PPn2Q2/R1NK2R1"});
+      let score2 = chess.score().white.toString() === "B,N,P,P,P,P" && chess.score().black.toString() === "N,R,P,P";
+
+      // TODO: Issue with pawn promotion scoring. Might have to calc for FEN but log otherwise.
+
+      assert(score1 && score2);
+      
+      done();
+    } catch (e) {
+      done(e);
+    }
+  });
+
   it("Undo moves", (done) => {
     try {
       let chess = new Chess();

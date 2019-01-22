@@ -124,9 +124,8 @@ describe("Movement tests", () => {
   it("SAN notation for move", (done) => {
     try {
 
-      // TODO: Add regular move
-      // TODO: Add castling moves
-      // TODO: Add Ambiguous moves (different levels)
+      // TODO: Add ambiguous moves (different levels)
+      // TODO: Add pawn movement and pawn captures
       
       let chess = new Chess({fen: "7k/p3rP1B/8/3q4/5B2/2p1K1PQ/P6P/5r2"});
       let checkmatePrior = chess.checkmate().black && !chess.checkmate().white;
@@ -136,7 +135,16 @@ describe("Movement tests", () => {
       let checkPrior = chess.check().length > 0;
       let check = !checkPrior && chess.moveToSAN({from:"c7",to:"e7"}) == "Re7+";
 
-      assert (checkmate && check);
+      chess = new Chess({fen:"r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R"});
+      let castleBlackQueen = chess.moveToSAN({from:"e8",to:"a8"}) === "0-0-0";
+
+      chess = new Chess({fen:"r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R"});
+      let castleWhiteKing = chess.moveToSAN({from:"e1",to:"h1"}) === "0-0";
+
+      chess = new Chess({fen:"8/4P3/8/8/8/8/8/8"});
+      let promote  = chess.moveToSAN({from:"e7",to:"h8",promote:"Q"}) === "h8=Q";
+
+      assert (checkmate && check && castleBlackQueen && castleWhiteKing && promote);
 
       done();
     } catch (e) {

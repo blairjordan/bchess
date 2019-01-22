@@ -71,6 +71,7 @@ const Unicode =
   K: { black: 0x265A, white: 0x2654 }
 };
 const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+const [WHITE_TURN, BLACK_TURN] = [0,1];
 
 class Piece {
   constructor(name, color, moves) {
@@ -253,6 +254,11 @@ class Chess {
     this.init();
     this.input({fen: fen || START_FEN});
     this.moves = 0;
+    this.turnColor = WHITE_TURN;
+  }
+
+  turn() {
+    return (this.turnColor === WHITE_TURN) ? WHITE : BLACK;
   }
 
   board() {
@@ -559,6 +565,9 @@ class Chess {
       return action;
 
     this._log({from, to, action, modifiers, capture});
+    this.moves++;
+    this.turnColor ^= true;
+
     if (action & (Action.CASTLE_KING | Action.CASTLE_QUEEN)) {
       // get new locations
       const kingSquare = this._get(from.rank + modifiers.from.rankIdx, FILES[Chess.fileIdx(from.file) + modifiers.from.fileIdx]);
@@ -581,7 +590,6 @@ class Chess {
       to.piece.moves++;
     }
     from.piece = new Piece();
-    this.moves++;
     return action;
   }
   
@@ -721,7 +729,6 @@ class Chess {
       check = "+"
     this.undo();
 
-    
     return `${from.piece.name}${fromCoord}${capture}${to.file}${to.rank}${check}`
   }
 }

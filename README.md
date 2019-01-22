@@ -14,7 +14,7 @@ Simply include the library to start using it:
 ## API
 
 ### move
-Carry out the specified move.
+Carry out the specified move
 
     chess.move({from:"c2",to:"c4"});
 
@@ -29,13 +29,13 @@ Arbitrarily set a piece down on the board:
 
 ### history
 
-Get the current game history.
+Get the current game history
 
     chess.history
     
 ### ascii
 
-Returns an ascii string of the board.
+Returns an ascii string of the board
 
     chess.ascii({})
 
@@ -61,9 +61,9 @@ Pass the `unicode` option to replace characters with unicode chess symbols:
 
 ### score
 
-Get the current game score.
+Get the current game score
 
-    chess.score
+    chess.score()
 
 ### get
 
@@ -96,3 +96,27 @@ Return the total move count (completed turns)
 Undo the most recent move
 
     chess.undo()
+
+### turn
+
+Whose turn is it?
+
+    chess.turn()
+
+### check
+
+Returns pieces in check (and pieces checking them)
+
+    chess.check()
+
+### checkmate
+
+Returns checkmate status for both sides
+
+    chess.checkmate()
+
+### moveToSAN
+
+Return the SAN notation of a move
+
+    chess.moveToSAN({from:"f2",to:"f4"});
