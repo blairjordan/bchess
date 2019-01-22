@@ -103,8 +103,6 @@ describe("Game tests", () => {
       chess = new Chess({fen:"5rk1/pp2p3/3p2pb/2pP4/2q5/3b1B1P/PPn2Q2/R1NK2R1"});
       let score2 = chess.score().white.toString() === "B,N,P,P,P,P" && chess.score().black.toString() === "N,R,P,P";
 
-      // TODO: Issue with pawn promotion scoring. Might have to calc for FEN but log otherwise.
-
       assert(score1 && score2);
       
       done();

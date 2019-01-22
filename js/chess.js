@@ -403,8 +403,12 @@ class Chess {
   // return taken pieces for both colors
   score() {
     const current = this.flatten().reduce((prev, curr) => {
-      if (curr.piece.isSet())
-        prev[curr.piece.color].push(curr.piece.name);
+      if (curr.piece.isSet()) {
+        if (!curr.piece.isPromoted)
+          prev[curr.piece.color].push(curr.piece.name);
+        else
+          prev[curr.piece.color].push(PAWN);
+      }
       return prev;
     }, {black: [], white: []});
     
