@@ -120,4 +120,27 @@ describe("Movement tests", () => {
       done(e);
     }
   });
+
+  it("SAN notation for move", (done) => {
+    try {
+
+      // TODO: Add regular move
+      // TODO: Add castling moves
+      // TODO: Add Ambiguous moves (different levels)
+      
+      let chess = new Chess({fen: "7k/p3rP1B/8/3q4/5B2/2p1K1PQ/P6P/5r2"});
+      let checkmatePrior = chess.checkmate().black && !chess.checkmate().white;
+      let checkmate = !checkmatePrior && chess.moveToSAN({from:"d5",to:"d2"}) == "Qd2#";
+
+      chess = new Chess({fen:"7k/p1r2P1B/8/8/5B2/2p1K1PQ/P6P/q4r2"});
+      let checkPrior = chess.check().length > 0;
+      let check = !checkPrior && chess.moveToSAN({from:"c7",to:"e7"}) == "Re7+";
+
+      assert (checkmate && check);
+
+      done();
+    } catch (e) {
+      done(e);
+    }
+  });
 });

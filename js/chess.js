@@ -688,8 +688,7 @@ class Chess {
   moveToSAN(opts) {
     const [ from, to ] = [this._get(...Chess._split(opts.from)), this._get(...Chess._split(opts.to))];
     const { action } = this._action(from, to);
-    let capture = ""; // x
-    let fromCoord = "";
+    let [capture, check, fromCoord] = new Array(3).fill("");
 
     if (action & (Action.CASTLE_KING))
       return "0-0";
@@ -701,7 +700,11 @@ class Chess {
       return `${to.file}${to.rank}=${opts.promote}`;
 
     let ambiguous = this.ambiguousSAN(from, to);
-    if (ambiguous.filter(a => a.file === from.file).length === 0)
+
+    if ((ambiguous.filter(a => a.file === from.file).length === 0) 
+      && (ambiguous.filter(a => a.rank === from.rank).length === 0))
+      fromCoord = "";
+    else if (ambiguous.filter(a => a.file === from.file).length === 0)
       fromCoord = from.file;
     else if (ambiguous.filter(a => a.rank === from.rank).length === 0)
       fromCoord = from.rank;
@@ -711,12 +714,15 @@ class Chess {
     if (action & (Action.OPPONENT_CAPTURE | Action.PLAYER_CAPTURE))
       capture = "x";
       
-    // TODO:
-    // include pawn file if capture
-    // add check +
-    // add checkmate #
+    this._move(from, to);
+    if (this.checkmate().white || this.checkmate().black)
+      check = "#";
+    else if (this.check().length > 0)
+      check = "+"
+    this.undo();
+
     
-    return `${from.piece.name}${fromCoord}${capture}${to.file}${to.rank}`
+    return `${from.piece.name}${fromCoord}${capture}${to.file}${to.rank}${check}`
   }
 }
 
