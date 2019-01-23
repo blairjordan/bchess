@@ -700,7 +700,7 @@ class Chess {
   moveToSAN(opts) {
     const [ from, to ] = [this._get(...Chess._split(opts.from)), this._get(...Chess._split(opts.to))];
     const { action } = this._action(from, to);
-    let [capture, check, fromCoord] = new Array(3).fill("");
+    let [pieceName, capture, check, fromCoord] = new Array(4).fill("");
 
     if (action & (Action.CASTLE_KING))
       return "0-0";
@@ -713,27 +713,34 @@ class Chess {
 
     let ambiguous = this.ambiguousSAN(from, to);
 
-    if ((ambiguous.filter(a => a.file === from.file).length === 0) 
-      && (ambiguous.filter(a => a.rank === from.rank).length === 0))
-      fromCoord = "";
-    else if (ambiguous.filter(a => a.file === from.file).length === 0)
-      fromCoord = from.file;
-    else if (ambiguous.filter(a => a.rank === from.rank).length === 0)
-      fromCoord = from.rank;
-    else
-      fromCoord = `${from.file}${from.rank}`
-
-    if (action & (Action.OPPONENT_CAPTURE | Action.PLAYER_CAPTURE))
+    if (action & (Action.OPPONENT_CAPTURE | Action.PLAYER_CAPTURE | Action.EN_PASSANT))
       capture = "x";
-      
-    this._move(from, to);
+
+    if (from.piece.name === PAWN && capture) {
+      fromCoord = from.file;
+    } else {
+      pieceName = from.piece.name;
+      if ((ambiguous.filter(a => a.file === from.file).length === 0) 
+        && (ambiguous.filter(a => a.rank === from.rank).length === 0))
+        fromCoord = "";
+      else if (ambiguous.filter(a => a.file === from.file).length === 0)
+        fromCoord = from.file;
+      else if (ambiguous.filter(a => a.rank === from.rank).length === 0)
+        fromCoord = from.rank;
+      else
+        fromCoord = `${from.file}${from.rank}`
+    }
+
+    if (this._move(from, to) === Action.INVALID_ACTION)
+      return;
+
     if (this.checkmate().white || this.checkmate().black)
       check = "#";
     else if (this.check().length > 0)
       check = "+"
     this.undo();
 
-    return `${from.piece.name}${fromCoord}${capture}${to.file}${to.rank}${check}`
+    return `${pieceName}${fromCoord}${capture}${to.file}${to.rank}${check}`
   }
 }
 

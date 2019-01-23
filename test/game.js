@@ -103,7 +103,11 @@ describe("Game tests", () => {
       chess = new Chess({fen:"5rk1/pp2p3/3p2pb/2pP4/2q5/3b1B1P/PPn2Q2/R1NK2R1"});
       let score2 = chess.score().white.toString() === "B,N,P,P,P,P" && chess.score().black.toString() === "N,R,P,P";
 
-      assert(score1 && score2);
+      chess = new Chess({fen:"8/4P3/8/8/8/8/8/8"});
+      chess.move({from: "e7", to: "e8", promote: "Q"});
+      let score3 = chess.score().white.toString() === "R,N,B,Q,K,B,N,R,P,P,P,P,P,P,P";
+
+      assert(score1 && score2 && score3);
       
       done();
     } catch (e) {
