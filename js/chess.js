@@ -561,7 +561,7 @@ class Chess {
   }
 
   // move piece at source square to target square
-  _move(from, to, promote = null) {
+  _move(from, to, promote = QUEEN) {
     const available = this._available(from);
     const { action, modifiers, capture } = this._action(from, to);
 
