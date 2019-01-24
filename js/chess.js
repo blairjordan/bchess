@@ -720,8 +720,7 @@ class Chess {
       fromCoord = from.file;
     } else {
       pieceName = from.piece.name;
-      if ((ambiguous.filter(a => a.file === from.file).length === 0) 
-        && (ambiguous.filter(a => a.rank === from.rank).length === 0))
+      if (ambiguous.length === 0)
         fromCoord = "";
       else if (ambiguous.filter(a => a.file === from.file).length === 0)
         fromCoord = from.file;
