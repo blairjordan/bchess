@@ -48,7 +48,7 @@ const SAN = {
   CAPTURE: "x",
   CHECK: "+",
   CHECKMATE: "#"
-}
+};
 const Action = {
   MOVE: 1,
   PLAYER_CAPTURE: 2,
@@ -611,7 +611,7 @@ class Chess {
     this.moves--;
     this.turn({ change: true });
 
-    const [from, to] = [this.get({square:`${move.from.file}${move.from.rank}`}),this.get({square:`${move.to.file}${move.to.rank}`})]
+    const [from, to] = [this.get({square:`${move.from.file}${move.from.rank}`}),this.get({square:`${move.to.file}${move.to.rank}`})];
     
     this.get({square:`${move.from.file}${move.from.rank}`}).piece = to.piece;
       
@@ -656,7 +656,7 @@ class Chess {
 
   // return a copy of the board
   copy() {
-    return this._board.map(r => r.slice().map(f=>Object.assign(Object.create(Object.getPrototypeOf(f)),f)));
+    return this._board.map(r => r.slice().map(f => Object.assign(Object.create(Object.getPrototypeOf(f)),f)));
   }
 
   // returns true if a square exists, else false
@@ -732,7 +732,7 @@ class Chess {
       else if (ambiguous.filter(a => a.rank === from.rank).length === 0)
         fromCoord = from.rank;
       else
-        fromCoord = `${from.file}${from.rank}`
+        fromCoord = `${from.file}${from.rank}`;
     }
 
     if (this._move(from, to) === Action.INVALID_ACTION)
@@ -741,10 +741,10 @@ class Chess {
     if (this.checkmate().white || this.checkmate().black)
       check = "#";
     else if (this.check().length > 0)
-      check = "+"
+      check = "+";
     this.undo();
 
-    return `${pieceName}${fromCoord}${capture}${to.file}${to.rank}${check}`
+    return `${pieceName}${fromCoord}${capture}${to.file}${to.rank}${check}`;
   }
 }
 

@@ -127,7 +127,7 @@ describe("Game tests", () => {
       chess.undo();
       let enPassant = chess.fen() === "rnbqkbnr/pp1ppppp/8/2pP4/8/8/PPP1PPPP/RNBQKBNR";
       chess.undo();
-      let two_moves = chess.fen() == "rnbqkbnr/pppppppp/8/3P4/8/8/PPP1PPPP/RNBQKBNR";
+      let twoMoves = chess.fen() === "rnbqkbnr/pppppppp/8/3P4/8/8/PPP1PPPP/RNBQKBNR";
       
       chess = new Chess({fen:"r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R"});
       chess.move({from:"e1", to: "a1"});
@@ -147,9 +147,9 @@ describe("Game tests", () => {
       chess = new Chess({fen:"r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R"});
       chess.move({from:"e8", to: "h8"});
       chess.undo();
-      let blackCastleKing = chess.fen() === "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R"
+      let blackCastleKing = chess.fen() === "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R";
       
-      assert (start && enPassant && two_moves && whiteCastleQueen && whiteCastleKing && blackCastleQueen && blackCastleKing);
+      assert (start && enPassant && twoMoves && whiteCastleQueen && whiteCastleKing && blackCastleQueen && blackCastleKing);
 
       done();
     } catch (e) {
