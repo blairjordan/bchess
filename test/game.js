@@ -125,7 +125,7 @@ describe("Game tests", () => {
       chess.move({from:"c7", to: "c5"});
       chess.move({from:"d5", to: "c6"});
       chess.undo();
-      let en_passant = chess.fen() === "rnbqkbnr/pp1ppppp/8/2pP4/8/8/PPP1PPPP/RNBQKBNR";
+      let enPassant = chess.fen() === "rnbqkbnr/pp1ppppp/8/2pP4/8/8/PPP1PPPP/RNBQKBNR";
       chess.undo();
       let two_moves = chess.fen() == "rnbqkbnr/pppppppp/8/3P4/8/8/PPP1PPPP/RNBQKBNR";
       
@@ -149,8 +149,28 @@ describe("Game tests", () => {
       chess.undo();
       let blackCastleKing = chess.fen() === "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R"
       
-      assert (start && en_passant && two_moves && whiteCastleQueen && whiteCastleKing && blackCastleQueen && blackCastleKing);
+      assert (start && enPassant && two_moves && whiteCastleQueen && whiteCastleKing && blackCastleQueen && blackCastleKing);
 
+      done();
+    } catch (e) {
+      done(e);
+    }
+  });
+
+  it("Undo moves", (done) => {
+    try {
+      const chess = new Chess();
+      let start = chess.turn() === "white";
+      chess.move({from:"e2", to: "e4"})
+      let whiteMoved = chess.turn() === "black";
+      chess.move({from:"b7", to: "b5"})
+      let blackMoved = chess.turn() === "white";
+      chess.undo();
+      let blackUndo = chess.turn() === "black";
+      chess.undo();
+      let whiteUndo = chess.turn() === "white";
+  
+      assert(start && whiteMoved && blackMoved && blackUndo && whiteUndo)
       done();
     } catch (e) {
       done(e);

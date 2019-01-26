@@ -257,7 +257,10 @@ class Chess {
     this.turnColor = WHITE_TURN;
   }
 
-  turn() {
+  turn(opts = {}) {
+    const { change } = opts;
+    if (change)
+      this.turnColor ^= true;
     return (this.turnColor === WHITE_TURN) ? WHITE : BLACK;
   }
 
@@ -570,7 +573,8 @@ class Chess {
 
     this._log({from, to, action, modifiers, capture});
     this.moves++;
-    this.turnColor ^= true;
+
+    this.turn({ change: true });
 
     if (action & (Action.CASTLE_KING | Action.CASTLE_QUEEN)) {
       // get new locations
@@ -605,6 +609,7 @@ class Chess {
       return;
     
     this.moves--;
+    this.turn({ change: true });
 
     const [from, to] = [this.get({square:`${move.from.file}${move.from.rank}`}),this.get({square:`${move.to.file}${move.to.rank}`})]
     
@@ -731,7 +736,7 @@ class Chess {
     }
 
     if (this._move(from, to) === Action.INVALID_ACTION)
-      return;
+      return "";
 
     if (this.checkmate().white || this.checkmate().black)
       check = "#";

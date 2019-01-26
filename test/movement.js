@@ -144,7 +144,27 @@ describe("Movement tests", () => {
       chess = new Chess({fen:"8/4P3/8/8/8/8/8/8"});
       let promote  = chess.moveToSAN({from:"e7",to:"h8",promote:"Q"}) === "h8=Q";
 
-      assert (checkmate && check && castleBlackQueen && castleWhiteKing && promote);
+      chess = new Chess({fen: "rnbqkbnr/pppppppp/8/4P3/8/8/PPPP1PPP/RNBQKBNR"});
+      chess.move({from:"d7",to:"d5"})
+      let enPassant = chess.moveToSAN({from:'e5',to:'d6'}) === "exd6";
+
+      chess = new Chess({fen:"rnbqkbnr/pp1pp1pp/5p2/2p5/3PP1P1/8/PPP2P1P/RNBQKBNR"});
+      let pawnCapture = chess.moveToSAN({from:"c5",to:"d4"}) === "cxd4"
+
+      chess = new Chess({fen:"k7/8/3R4/8/8/8/3R4/7K"});
+      let ambiguousFile = chess.moveToSAN({from:"d2",to:"d4"}) === "R2d4";
+
+      chess = new Chess({fen:"k7/8/8/1R4R1/8/8/8/7K"});
+      let ambiguousRank = chess.moveToSAN({from:"b5",to:"e5"}) === "Rbe5";
+
+      chess = new Chess({fen:"k7/8/8/2Q2Q2/8/8/2Q5/7K"});
+      let ambiguousFileRank = chess.moveToSAN({from:"c5",to:"f2"}) === "Qc5f2"
+
+      chess = new Chess();
+      let invalidMove = chess.moveToSAN({from:"c2",to:"c5"}) === "";
+
+      assert (checkmate && check && castleBlackQueen && castleWhiteKing && promote && enPassant
+        && pawnCapture && ambiguousFile && ambiguousRank && ambiguousFileRank && invalidMove);
 
       done();
     } catch (e) {
