@@ -1,5 +1,5 @@
 const id = Math.floor(100000 + Math.random() * 900000);
-const socket = io.connect("http://172.104.45.14:3001");
+const socket = io.connect("http://localhost:3001");
 
 socket.on("connect", function() {
     toggleStatus();

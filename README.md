@@ -14,7 +14,7 @@ Simply include the library to start using it:
 ## API
 
 ### move
-Carry out the specified move.
+Carry out the specified move
 
     chess.move({from:"c2",to:"c4"});
 
@@ -29,13 +29,13 @@ Arbitrarily set a piece down on the board:
 
 ### history
 
-Get the current game history.
+Get the current game history
 
     chess.history
     
 ### ascii
 
-Returns an ascii string of the board.
+Returns an ascii string of the board
 
     chess.ascii({})
 
@@ -61,9 +61,9 @@ Pass the `unicode` option to replace characters with unicode chess symbols:
 
 ### score
 
-Get the current game score.
+Get the current game score
 
-    chess.score
+    chess.score()
 
 ### get
 
@@ -73,7 +73,7 @@ Fetch the information at a current square
 
 ### fen
 
-Returns the board in [FEN](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation) notation.
+Returns the current game state in [FEN](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation) notation.
 
     chess.fen()
 
@@ -81,8 +81,42 @@ Example output:
 
     rnbqkbnr/ppppp1pp/5P2/1Q6/8/5N1B/PPPPPP1P/RNBQ1RK1
 
+You can also initialise a new game using FEN notation:
+
+    const chess = new Chess({fen:"kb5Q/p7/Pp6/1P6/4p3/4R3/4P1p1/6K1"});
+
 ### moves
 
-Return the total move counts (completed turns)
+Return the total move count (completed turns)
 
     chess.moves
+
+### undo
+
+Undo the most recent move
+
+    chess.undo()
+
+### turn
+
+Whose turn is it?
+
+    chess.turn()
+
+### check
+
+Returns pieces in check (and pieces checking them)
+
+    chess.check()
+
+### checkmate
+
+Returns checkmate status for both sides
+
+    chess.checkmate()
+
+### moveToSAN
+
+Return the SAN notation of a move
+
+    chess.moveToSAN({from:"f2",to:"f4"});

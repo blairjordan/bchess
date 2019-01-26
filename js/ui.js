@@ -23,16 +23,16 @@ const build = () => {
 };
 
 const refreshScore = () => {
-  let theirScore = (chess.myColor === WHITE) ? chess.score.white : chess.score.black;
-  let myScore = (chess.myColor === WHITE) ? chess.score.black : chess.score.white;
+  let theirScore = (chess.myColor === WHITE) ? chess.score().white : chess.score().black;
+  let myScore = (chess.myColor === WHITE) ? chess.score().black : chess.score().white;
   
   $(".score > .player").empty();
   $(".score > .opponent").empty();
   myScore.forEach(s => {
-    $(".score > .player").append(`<div class="${pieceClass(s.name, s.color)}" /></div>`);
+    $(".score > .player").append(`<div class="${pieceClass(s, chess.theirColor)}" /></div>`);
   });
   theirScore.forEach(s => {
-    $(".score > .opponent").append(`<div class="${pieceClass(s.name, s.color)}" /></div>`);
+    $(".score > .opponent").append(`<div class="${pieceClass(s, chess.myColor)}" /></div>`);
   });
 };
 
@@ -49,6 +49,7 @@ const refresh = () => {
     $(`*.square[data-rank="${c.checked.rank}"][data-file="${c.checked.file}"]`).addClass("checked");
   });
   refreshScore();
+  $('#movecount').text(chess.moves);
 };
 
 let source = null;
@@ -97,7 +98,13 @@ const listen = (event, cb) => {
         cb();
       });
       break;
-  }
+    case "undo-click":
+      $(document).on("click", "#undo", function(event) {
+        chess.undo();
+        refresh();
+        cb();
+      });
+      break;  }
 };
 
 const toggleSetup = () => $(".setup").toggle();
