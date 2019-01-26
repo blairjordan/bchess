@@ -161,16 +161,16 @@ describe("Game tests", () => {
     try {
       const chess = new Chess();
       let start = chess.turn() === "white";
-      chess.move({from:"e2", to: "e4"})
+      chess.move({from:"e2", to: "e4"});
       let whiteMoved = chess.turn() === "black";
-      chess.move({from:"b7", to: "b5"})
+      chess.move({from:"b7", to: "b5"});
       let blackMoved = chess.turn() === "white";
       chess.undo();
       let blackUndo = chess.turn() === "black";
       chess.undo();
       let whiteUndo = chess.turn() === "white";
   
-      assert(start && whiteMoved && blackMoved && blackUndo && whiteUndo)
+      assert(start && whiteMoved && blackMoved && blackUndo && whiteUndo);
       done();
     } catch (e) {
       done(e);
