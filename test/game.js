@@ -64,30 +64,53 @@ describe("Game tests", () => {
     }
   });
 
-  it("Detects checkmate", (done) => {
+  it("Detects stalemate", (done) => {
     try {
-      let chess = new Chess({fen: "4k3/4P3/3PK3/8/8/8/8/8"});
-      let black1 = chess.checkmate().black && !chess.checkmate().white;
+      let chess = new Chess({fen:"4k3/4P3/3PK3/8/8/8/8/8"});
+      const checkmate1 = chess.checkmate().black || chess.checkmate().white;
+      const black1 = !checkmate1 && chess.stalemate().black && !chess.stalemate().white;
+  
+      chess = new Chess({fen:"5bnr/4p1pq/4Qpkr/7p/7P/4P3/PPPP1PP1/RNB1KBNR"});
+      const checkmate2 = chess.checkmate().black || chess.checkmate().white;
+      const black2 = !checkmate2 && chess.stalemate().black && !chess.stalemate().white;
       
-      chess = new Chess({fen: "R5k1/5ppp/8/8/8/8/8/R3K3"});
-      let black2 = chess.checkmate().black && !chess.checkmate().white;
-
-      chess = new Chess({fen: "r4r2/ppp1Nppk/8/7R/8/1P6/P4PPP/6K1"});
-      let black3 = chess.checkmate().black && !chess.checkmate().white;
-
-      chess = new Chess({fen: "7k/p6p/1p6/8/8/8/BB3K2/8"});
-      let black4 = chess.checkmate().black && !chess.checkmate().white;
-
-      chess = new Chess({fen:"r4rk1/1Q1b1pp1/2B2n2/7p/8/bRpP2P1/P1P1Pp1P/2qK3R"});
-      let white1 = chess.checkmate().white && !chess.checkmate().black;
-
-      chess = new Chess({fen:"rnb1kbnr/pppp1ppp/8/4p3/6Pq/5p2/PPPPP2P/RNBQKBNR"});
-      let white2 = chess.checkmate().white && !chess.checkmate().black;
+      chess = new Chess({fen:"8/8/8/8/8/7k/7p/7K"});
+      const checkmate3 = chess.checkmate().black || chess.checkmate().white;
+      const white1 = !checkmate3 && !chess.stalemate().black && chess.stalemate().white;
 
       chess = new Chess({fen:"7k/p3rP1B/8/8/5B2/2p1K1PQ/P2q3P/5r2"});
-      let white3 = chess.checkmate().white && !chess.checkmate().black;
+      const none = !chess.stalemate().white && !chess.stalemate().black;
 
-      assert (black1 && black2 && black3 && black4 && white1 && white2 && white3);
+      assert (black1 && black2 && white1 && none);
+
+      done();
+    } catch (e) {
+      done(e);
+    }
+  });
+
+
+  it("Detects checkmate", (done) => {
+    try {
+      chess = new Chess({fen: "R5k1/5ppp/8/8/8/8/8/R3K3"});
+      const black1 = chess.checkmate().black && !chess.checkmate().white;
+
+      chess = new Chess({fen: "r4r2/ppp1Nppk/8/7R/8/1P6/P4PPP/6K1"});
+      const black2 = chess.checkmate().black && !chess.checkmate().white;
+
+      chess = new Chess({fen: "7k/p6p/1p6/8/8/8/BB3K2/8"});
+      const black3 = chess.checkmate().black && !chess.checkmate().white;
+
+      chess = new Chess({fen:"r4rk1/1Q1b1pp1/2B2n2/7p/8/bRpP2P1/P1P1Pp1P/2qK3R"});
+      const white1 = chess.checkmate().white && !chess.checkmate().black;
+
+      chess = new Chess({fen:"rnb1kbnr/pppp1ppp/8/4p3/6Pq/5p2/PPPPP2P/RNBQKBNR"});
+      const white2 = chess.checkmate().white && !chess.checkmate().black;
+
+      chess = new Chess({fen:"7k/p3rP1B/8/8/5B2/2p1K1PQ/P2q3P/5r2"});
+      const white3 = chess.checkmate().white && !chess.checkmate().black;
+
+      assert (black1 && black2 && black3 && white1 && white2 && white3);
 
       done();
     } catch (e) {

@@ -339,20 +339,39 @@ class Chess {
     return checked;
   }
 
+  // return stalemate positions
+  stalemate() {
+    const check = this.check();
+    let stalemated = {
+        white: check.filter(c => c.checked.piece.color === WHITE).length === 0 && !this.hasMoves().white, 
+        black: check.filter(c => c.checked.piece.color === BLACK).length === 0 && !this.hasMoves().black
+    };
+    return stalemated;
+  }
+
   // return checkmate positions
-  checkmate(opts) {
-    let checkmated = { white: true, black: true };
+  checkmate() {
+    const check = this.check();
+    let checkmated = { 
+        white: check.filter(c => c.checked.piece.color === WHITE).length > 0 && !this.hasMoves().white, 
+        black: check.filter(c => c.checked.piece.color === BLACK).length > 0 && !this.hasMoves().black
+    };
+    return checkmated;
+  }
+
+  hasMoves(opts = {}) {
+    let hasMoves = { white: false, black: false };
     this.find({...opts}).forEach(f => {
-      this._available(f).every(a => {
+      this._available(f).some(a => {
         if (!(this._move(f, a) & (Action.CASTLE_KING | Action.CASTLE_QUEEN))) {
           if (this.check({}).filter(c => c.checked.piece.color === a.piece.color).length === 0)
-            checkmated[a.piece.color] = false;
+          hasMoves[a.piece.color] = true;
         }
         this.undo();
-        return checkmated[f.piece.color];
+        return hasMoves[f.piece.color];
       });
     });
-    return checkmated;
+    return hasMoves;
   }
 
   fen() {

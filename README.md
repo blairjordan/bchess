@@ -20,7 +20,7 @@ Carry out the specified move
 
 A third option is available to specify a the piece used for promotion (if available):
 
-    chess.move({from:"c2",to:"c4",promote:"Q});
+    chess.move({from:"c2",to:"c4",promote:"Q"});
 
 ### set
 Arbitrarily set a piece down on the board:
@@ -115,8 +115,15 @@ Returns checkmate status for both sides
 
     chess.checkmate()
 
+
+### stalemate
+
+Returns stalemate status for both sides
+
+    chess.stalemate()
+
 ### moveToSAN
 
-Return the SAN notation of a move
+Return the [SAN](https://en.wikipedia.org/wiki/Algebraic_notation_(chess)) notation of a move
 
     chess.moveToSAN({from:"f2",to:"f4"});
