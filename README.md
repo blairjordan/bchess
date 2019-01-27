@@ -115,7 +115,6 @@ Returns checkmate status for both sides
 
     chess.checkmate()
 
-
 ### stalemate
 
 Returns stalemate status for both sides

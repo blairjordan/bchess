@@ -92,7 +92,7 @@ describe("Game tests", () => {
 
   it("Detects checkmate", (done) => {
     try {
-      chess = new Chess({fen: "R5k1/5ppp/8/8/8/8/8/R3K3"});
+      let chess = new Chess({fen: "R5k1/5ppp/8/8/8/8/8/R3K3"});
       const black1 = chess.checkmate().black && !chess.checkmate().white;
 
       chess = new Chess({fen: "r4r2/ppp1Nppk/8/7R/8/1P6/P4PPP/6K1"});
