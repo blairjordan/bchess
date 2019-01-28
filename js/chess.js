@@ -245,6 +245,18 @@ class Move {
   }
 }
 
+class Square {
+  constructor() {
+    this.piece = new Piece();
+    this.rank = "";
+    this.file = "";
+  }
+
+  ref() {
+    return `${this.file}${this.rank}`;
+  }
+}
+
 class Chess {
   constructor(opts = {}) {
     const { color, fen } = opts; 
@@ -272,11 +284,7 @@ class Chess {
     this._board = 
       new Array(HEIGHT).fill().map(
       () => new Array(WIDTH).fill().map(
-        () => new (function () {
-          this.piece = new Piece();
-          this.rank = "";
-          this.file = "";
-        })()
+        () => new Square()
       )
     );
 
@@ -733,7 +741,7 @@ class Chess {
       return "0-0-0";
 
     if (action & (Action.PROMOTE))
-      return `${to.file}${to.rank}=${opts.promote}`;
+      return `${to.ref()}=${opts.promote}`;
 
     let ambiguous = this.ambiguousSAN(from, to);
 
@@ -751,7 +759,7 @@ class Chess {
       else if (ambiguous.filter(a => a.rank === from.rank).length === 0)
         fromCoord = from.rank;
       else
-        fromCoord = `${from.file}${from.rank}`;
+        fromCoord = `${from.ref()}`;
     }
 
     if (this._move(from, to) === Action.INVALID_ACTION)
@@ -763,7 +771,7 @@ class Chess {
       check = "+";
     this.undo();
 
-    return `${pieceName}${fromCoord}${capture}${to.file}${to.rank}${check}`;
+    return `${pieceName}${fromCoord}${capture}${to.ref()}${check}`;
   }
 }
 

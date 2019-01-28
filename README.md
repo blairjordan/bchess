@@ -18,7 +18,7 @@ Carry out the specified move
 
     chess.move({from:"c2",to:"c4"});
 
-A third option is available to specify a the piece used for promotion (if available):
+A third option is available to specify the piece used for promotion (if available):
 
     chess.move({from:"c2",to:"c4",promote:"Q"});
 
