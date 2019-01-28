@@ -159,8 +159,11 @@ describe("Movement tests", () => {
       chess = new Chess();
       let invalidMove = chess.moveToSAN({from:"c2",to:"c5"}) === "";
 
+      chess = new Chess();
+      let pawnMove = chess.moveToSAN({from:"d7",to:"d5"}) == "d5";
+
       assert (checkmate && check && castleBlackQueen && castleWhiteKing && promote && enPassant
-        && pawnCapture && ambiguousFile && ambiguousRank && ambiguousFileRank && invalidMove);
+        && pawnCapture && ambiguousFile && ambiguousRank && ambiguousFileRank && invalidMove && pawnMove);
 
       done();
     } catch (e) {

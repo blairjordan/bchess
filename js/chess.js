@@ -748,10 +748,11 @@ class Chess {
     if (action & (Action.OPPONENT_CAPTURE | Action.PLAYER_CAPTURE | Action.EN_PASSANT))
       capture = "x";
 
+    pieceName = (from.piece.name === PAWN) ? "" : from.piece.name;
+
     if (from.piece.name === PAWN && capture) {
       fromCoord = from.file;
     } else {
-      pieceName = from.piece.name;
       if (ambiguous.length === 0)
         fromCoord = "";
       else if (ambiguous.filter(a => a.file === from.file).length === 0)
