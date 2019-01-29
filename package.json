@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/blairjordan/chess.js.git"
+    "url": "git+https://github.com/blairjordan/bchess.git"
   },
   "keywords": [
     "chess",
@@ -28,9 +28,9 @@
   "author": "B. Jordan",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/blairjordan/chess.js/issues"
+    "url": "https://github.com/blairjordan/bchess/issues"
   },
-  "homepage": "https://github.com/blairjordan/chess.js#readme",
+  "homepage": "https://github.com/blairjordan/bchess#readme",
   "nyc": {
     "check-coverage": true,
     "reporter": [
