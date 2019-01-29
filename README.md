@@ -1,6 +1,6 @@
 # chess.js
 
-[![Build Status](https://travis-ci.com/blairjordan/chess.js.svg?branch=master)](https://travis-ci.com/blairjordan/chess.js) [![License](https://img.shields.io/badge/license-BSD-lightgrey.svg)](https://opensource.org/licenses/BSD-2-Clause) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/1c77ee10589f47ccbc33c82db9b903ea)](https://www.codacy.com/app/blairjordan/chess.js?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=blairjordan/chess.js&amp;utm_campaign=Badge_Grade) [![Codecov Badge](https://codecov.io/gh/blairjordan/chess.js/branch/master/graph/badge.svg)](https://codecov.io/gh/blairjordan/chess.js)
+[![Build Status](https://travis-ci.com/blairjordan/chess.js.svg?branch=master)](https://travis-ci.com/blairjordan/chess.js) [![License](https://img.shields.io/github/license/blairjordan/chess.js.svg)](https://opensource.org/licenses/MIT) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/1c77ee10589f47ccbc33c82db9b903ea)](https://www.codacy.com/app/blairjordan/chess.js?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=blairjordan/chess.js&amp;utm_campaign=Badge_Grade) [![Codecov Badge](https://codecov.io/gh/blairjordan/chess.js/branch/master/graph/badge.svg)](https://codecov.io/gh/blairjordan/chess.js)
 
 Yet another chess engine.
 
