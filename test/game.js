@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { Chess, Piece, Action } = require("../js/chess");
+const { Chess, Piece, Action } = require("../src/js/bchess");
 
 describe("Game tests", () => {
 
