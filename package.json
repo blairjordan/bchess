@@ -1,8 +1,8 @@
 {
-  "name": "chess.js",
+  "name": "bchess",
   "version": "1.0.0",
   "description": "Yet another chess engine.",
-  "main": "index.js",
+  "main": "src/js/bchess.js",
   "dependencies": {
     "socket.io": "^2.2.0"
   },
