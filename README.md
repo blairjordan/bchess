@@ -6,9 +6,21 @@ Yet another chess engine.
 
 ![](img/screenshot1.png?raw=true)
 
+## Installation
+
+### npm
+
+    npm i bchess
+
+### Manual
+
+[Download the latest version of bchess](https://github.com/blairjordan/bchess/archive/master.zip) and include **src/js/bchess.js** in your project.
+
+## Usage
+
 Simply include the library to start using it:
 
-    const { Chess } = require("./js/bchess");
+    const { Chess } = require("bchess");
     const chess = new Chess();
 
 ## API
@@ -45,7 +57,7 @@ Example output:
     8 |  r  n  b  q  k  b  n  r  |
     7 |  p  p  p  p  p  .  p  p  |
     6 |  .  .  .  .  .  P  .  .  |
-    5 |  .  Q  .  .  .  .  .  .  |
+    5 |  .  .  .  .  .  .  .  .  |
     4 |  .  .  .  .  .  .  .  .  |
     3 |  .  .  .  .  .  N  .  B  |
     2 |  P  P  P  P  P  P  .  P  |
@@ -53,11 +65,14 @@ Example output:
       +--------------------------+
          a  b  c  d  e  f  g  h
          
-Pass the `unicode` option to replace characters with unicode chess symbols:
+#### Options
 
-    chess.ascii({ unicode:true })
-
-♟  ♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜  ♙  ♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖ 
+|Property|Description|Values|Default|
+|--|--|--|--|
+|border|Toggle border display|true / false|true|
+|file|Toggle file display|true / false|true|
+|rank|Toggle rank display|true / false|true|
+|unicode|Display [unicode characters](https://en.wikipedia.org/wiki/Chess_symbols_in_Unicode) for pieces instead of FEN notation|true/ false|false|
 
 ### score
 
