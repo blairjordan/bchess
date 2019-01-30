@@ -40,7 +40,7 @@ A third option is available to specify the piece used for promotion (if availabl
 
 #### Returns
 
-One of more **Action** flags.
+One or more **Action** flags.
 
 The following is a list of possible flags:
  - MOVE
