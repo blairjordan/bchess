@@ -53,7 +53,7 @@ The following is a list of possible flags:
  - INVALID_ACTION
 
 ### set
-Arbitrarily set a piece down on the board:
+Set a piece down anywhere on the board:
 
     chess.set({square: "h4", piece: new Piece("Q","white")});
 
