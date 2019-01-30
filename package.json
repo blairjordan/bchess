@@ -1,6 +1,6 @@
 {
   "name": "bchess",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Yet another chess engine.",
   "main": "src/js/bchess.js",
   "dependencies": {
