@@ -383,7 +383,7 @@ class Chess {
   }
 
   fen() {
-    return this.board().reduce((prev, curr, idx) => {
+    return this._board.reduce((prev, curr, idx) => {
       let rank = "";
       let blanks = 0;
       curr.forEach((f,i) => {
@@ -416,10 +416,10 @@ class Chess {
   }
 
   ascii(opts = {}) {
-    const { unicode, border = true, file = true, rank = true } = opts;
+    const { unicode, border = true, file = true, rank = true, color = this.myColor } = opts;
     const line = "  +--------------------------+\r\n";
     const files = `${border ? "     " : "  "}${(this.myColor === WHITE) ? FILES.join("  ") : FILES.slice().reverse().join("  ")}`;
-    const board = this.board().reduce((prev, curr, idx) => {
+    const board = ((color === this.myColor) ? this.board() : this.reverse()).reduce((prev, curr, idx) => {
       prev += `${(rank) ? ((this.myColor === WHITE) ? Chess.rankIdx(idx) : idx+1) : " " }${border ? " | " : ""}`;
       curr.forEach(f => {
         const symbol = (unicode && f.piece.isSet()) ? `${String.fromCodePoint(Unicode[f.piece.name][f.piece.color])}` : f.piece.name;
