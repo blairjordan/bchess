@@ -12,9 +12,9 @@ Yet another chess engine.
 
     npm i bchess
 
-### Download
+### CDN
 
-[Download the latest version of bchess](https://github.com/blairjordan/bchess/archive/master.zip) and include **src/js/bchess.js** in your project.
+    <script src="https://cdn.jsdelivr.net/npm/bchess@1/src/js/bchess.min.js"></script>
 
 ## Usage
 
