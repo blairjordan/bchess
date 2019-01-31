@@ -79,4 +79,18 @@ describe("Board tests", () => {
       done(e);
     }
   });
+
+  it("Board perspective", (done) => {
+    try {
+      let chess = new Chess();
+      let white = (chess.board()[0][0].piece.color === "black" && chess.board()[7][7].piece.color === "white");
+      chess = new Chess({color:"black"});
+      let black = (chess.board()[0][0].piece.color === "white" && chess.board()[7][7].piece.color === "black");
+      assert(white && black);
+      done();
+    } catch (e) {
+      done(e);
+    }
+  });
+
 });
