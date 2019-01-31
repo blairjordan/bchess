@@ -14,7 +14,7 @@ Yet another chess engine.
 
 ### CDN
 
-    <script src="https://cdn.jsdelivr.net/npm/bchess@1/src/js/bchess.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bchess@1/dist/bchess.min.js"></script>
 
 ## Usage
 
