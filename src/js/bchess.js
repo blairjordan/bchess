@@ -416,10 +416,10 @@ class Chess {
   }
 
   ascii(opts = {}) {
-    const { unicode, border = true, file = true, rank = true, color = this.myColor } = opts;
+    const { unicode, border = true, file = true, rank = true } = opts;
     const line = "  +--------------------------+\r\n";
     const files = `${border ? "     " : "  "}${(this.myColor === WHITE) ? FILES.join("  ") : FILES.slice().reverse().join("  ")}`;
-    const board = ((color === this.myColor) ? this.board() : this.reverse()).reduce((prev, curr, idx) => {
+    const board = ((this.myColor === WHITE) ? this._board : this.reverse()).reduce((prev, curr, idx) => {
       prev += `${(rank) ? ((this.myColor === WHITE) ? Chess.rankIdx(idx) : idx+1) : " " }${border ? " | " : ""}`;
       curr.forEach(f => {
         const symbol = (unicode && f.piece.isSet()) ? `${String.fromCodePoint(Unicode[f.piece.name][f.piece.color])}` : f.piece.name;
