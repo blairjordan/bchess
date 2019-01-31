@@ -1,18 +1,22 @@
 {
   "name": "bchess",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Yet another chess engine.",
-  "main": "src/js/bchess.js",
+  "main": "dist/bchess.js",
   "dependencies": {},
   "devDependencies": {
     "codecov": "^3.1.0",
     "mocha": "^5.2.0",
-    "nyc": "^13.1.0"
+    "nyc": "^13.1.0",
+    "gulp": "^4.0.0",
+    "gulp-rename": "^1.4.0",
+    "gulp-uglify-es": "^1.0.4"
   },
   "scripts": {
     "start": "node server.js",
     "test": "nyc mocha --timeout 10000 --exit",
-    "report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
+    "report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
+    "build": "gulp uglify && gulp copy"
   },
   "repository": {
     "type": "git",
@@ -21,7 +25,8 @@
   "keywords": [
     "chess",
     "board",
-    "game"
+    "game",
+    "engine"
   ],
   "author": "B. Jordan",
   "license": "MIT",

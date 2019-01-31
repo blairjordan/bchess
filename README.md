@@ -6,22 +6,26 @@ Yet another chess engine.
 
 ![](img/screenshot1.png?raw=true)
 
-## Installation
+## Getting Started
 
-### npm
+### Node
 
     npm i bchess
 
-### Manual
+### CDN
 
-[Download the latest version of bchess](https://github.com/blairjordan/bchess/archive/master.zip) and include **src/js/bchess.js** in your project.
+    <script src="https://cdn.jsdelivr.net/npm/bchess@1/src/js/bchess.min.js"></script>
 
 ## Usage
 
 Simply include the library to start using it:
 
-    const { Chess } = require("bchess");
-    const chess = new Chess();
+    const { Chess, Action, Piece } = require("bchess");
+    const chess = new Chess({color: "white"});
+
+You can also initialise a new game using FEN notation:
+
+    const chess = new Chess({fen:"kb5Q/p7/Pp6/1P6/4p3/4R3/4P1p1/6K1"});
 
 ## API
 
@@ -34,10 +38,29 @@ A third option is available to specify the piece used for promotion (if availabl
 
     chess.move({from:"c2",to:"c4",promote:"Q"});
 
+#### Returns
+
+One or more **Action** flags.
+
+The following is a list of possible flags:
+ - MOVE
+ - PLAYER_CAPTURE
+ - OPPONENT_CAPTURE
+ - CASTLE_KING
+ - CASTLE_QUEEN
+ - EN_PASSANT
+ - PROMOTE
+ - INVALID_ACTION
+
 ### set
-Arbitrarily set a piece down on the board:
+Set a piece down anywhere on the board:
 
     chess.set({square: "h4", piece: new Piece("Q","white")});
+
+### available
+Return an array of available moves a piece can make
+
+    chess.available({square:"e2"})
 
 ### history
 
@@ -47,9 +70,9 @@ Get the current game history
     
 ### ascii
 
-Returns an ascii string of the board
+Returns an ascii string representing the current board
 
-    chess.ascii({})
+    chess.ascii()
 
 Example output:
 
@@ -64,7 +87,9 @@ Example output:
     1 |  R  N  B  Q  .  R  K  .  |
       +--------------------------+
          a  b  c  d  e  f  g  h
-         
+
+*The perspective of the board returned depends on the Chess `myColor` property.*
+
 #### Options
 
 |Property|Description|Values|Default|
@@ -84,7 +109,7 @@ Get the current game score
 
 Fetch the information at a current square
 
-    chess.get({square:"g8"});
+    chess.get({square:"g8"})
 
 ### fen
 
@@ -96,10 +121,6 @@ Example output:
 
     rnbqkbnr/ppppp1pp/5P2/1Q6/8/5N1B/PPPPPP1P/RNBQ1RK1
 
-You can also initialise a new game using FEN notation:
-
-    const chess = new Chess({fen:"kb5Q/p7/Pp6/1P6/4p3/4R3/4P1p1/6K1"});
-
 ### moves
 
 Return the total move count (completed turns)
@@ -110,7 +131,7 @@ Return the total move count (completed turns)
 
 Undo the most recent move
 
-    chess.undo()
+    chess.undo();
 
 ### turn
 
@@ -140,4 +161,4 @@ Returns stalemate status for both sides
 
 Return the [SAN](https://en.wikipedia.org/wiki/Algebraic_notation_(chess)) notation of a move
 
-    chess.moveToSAN({from:"f2",to:"f4"});
+    chess.moveToSAN({from:"f2",to:"f4"})
