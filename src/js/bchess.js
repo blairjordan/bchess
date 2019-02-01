@@ -263,7 +263,6 @@ class Chess {
     this.Moves = new Move(this);
     [this.myColor, this.theirColor] = (color === BLACK) ? [BLACK, WHITE] : [WHITE, BLACK];
     this.history = [];
-    this.init();
     this.input({fen: fen || START_FEN});
     this.moves = 0;
     this.turnColor = WHITE_TURN;
@@ -400,6 +399,7 @@ class Chess {
   }
 
   input(opts) {
+    this.init();
     const { fen } = opts;
     fen.split("/").forEach((l,k) => {
         let skip = 0;
