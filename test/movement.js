@@ -129,7 +129,7 @@ describe("Movement tests", () => {
 
       chess = new Chess({fen:"7k/p1r2P1B/8/8/5B2/2p1K1PQ/P6P/q4r2"});
       let checkPrior = chess.check().length > 0;
-      let check = !checkPrior && chess.moveToSAN({from:"c7",to:"e7"}) == "Re7+";
+      let check = !checkPrior && chess.moveToSAN({from:"c7",to:"e7"}) === "Re7+";
 
       chess = new Chess({fen:"r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R"});
       let castleBlackQueen = chess.moveToSAN({from:"e8",to:"a8"}) === "0-0-0";
@@ -160,7 +160,7 @@ describe("Movement tests", () => {
       let invalidMove = chess.moveToSAN({from:"c2",to:"c5"}) === "";
 
       chess = new Chess();
-      let pawnMove = chess.moveToSAN({from:"d7",to:"d5"}) == "d5";
+      let pawnMove = chess.moveToSAN({from:"d7",to:"d5"}) === "d5";
 
       assert (checkmate && check && castleBlackQueen && castleWhiteKing && promote && enPassant
         && pawnCapture && ambiguousFile && ambiguousRank && ambiguousFileRank && invalidMove && pawnMove);
