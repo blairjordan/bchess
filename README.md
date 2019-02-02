@@ -1,6 +1,6 @@
 # bchess
 
-[![Build Status](https://travis-ci.com/blairjordan/bchess.svg?branch=master)](https://travis-ci.com/blairjordan/bchess) [![License](https://img.shields.io/github/license/blairjordan/bchess.svg)](https://opensource.org/licenses/MIT) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/1c77ee10589f47ccbc33c82db9b903ea)](https://www.codacy.com/app/blairjordan/bchess?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=blairjordan/bchess&amp;utm_campaign=Badge_Grade) [![Codecov Badge](https://codecov.io/gh/blairjordan/bchess/branch/master/graph/badge.svg)](https://codecov.io/gh/blairjordan/bchess)
+[![Build Status](https://travis-ci.com/blairjordan/bchess.svg?branch=master)](https://travis-ci.com/blairjordan/bchess) [![License](https://img.shields.io/github/license/blairjordan/bchess.svg)](https://opensource.org/licenses/MIT) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/1c77ee10589f47ccbc33c82db9b903ea)](https://www.codacy.com/app/blairjordan/bchess?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=blairjordan/bchess&amp;utm_campaign=Badge_Grade) [![Codecov Badge](https://codecov.io/gh/blairjordan/bchess/branch/master/graph/badge.svg)](https://codecov.io/gh/blairjordan/bchess) [![Heroku Badge](https://img.shields.io/badge/heroku-deployed-brightgreen.svg)](https://bchess.herokuapp.com/)
 
 Yet another chess engine.
 
