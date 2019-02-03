@@ -125,11 +125,11 @@ describe("Movement tests", () => {
     try {
       let chess = new Chess({fen: "7k/p3rP1B/8/3q4/5B2/2p1K1PQ/P6P/5r2"});
       let checkmatePrior = chess.checkmate().black || chess.checkmate().white;
-      let checkmate = !checkmatePrior && chess.moveToSAN({from:"d5",to:"d2"}) == "Qd2#";
+      let checkmate = !checkmatePrior && chess.moveToSAN({from:"d5",to:"d2"}) === "Qd2#";
 
       chess = new Chess({fen:"7k/p1r2P1B/8/8/5B2/2p1K1PQ/P6P/q4r2"});
       let checkPrior = chess.check().length > 0;
-      let check = !checkPrior && chess.moveToSAN({from:"c7",to:"e7"}) == "Re7+";
+      let check = !checkPrior && chess.moveToSAN({from:"c7",to:"e7"}) === "Re7+";
 
       chess = new Chess({fen:"r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R"});
       let castleBlackQueen = chess.moveToSAN({from:"e8",to:"a8"}) === "0-0-0";
@@ -141,11 +141,11 @@ describe("Movement tests", () => {
       let promote  = chess.moveToSAN({from:"e7",to:"h8",promote:"Q"}) === "h8=Q";
 
       chess = new Chess({fen: "rnbqkbnr/pppppppp/8/4P3/8/8/PPPP1PPP/RNBQKBNR"});
-      chess.move({from:"d7",to:"d5"})
-      let enPassant = chess.moveToSAN({from:'e5',to:'d6'}) === "exd6";
+      chess.move({from:"d7",to:"d5"});
+      let enPassant = chess.moveToSAN({from:"e5",to:"d6"}) === "exd6";
 
       chess = new Chess({fen:"rnbqkbnr/pp1pp1pp/5p2/2p5/3PP1P1/8/PPP2P1P/RNBQKBNR"});
-      let pawnCapture = chess.moveToSAN({from:"c5",to:"d4"}) === "cxd4"
+      let pawnCapture = chess.moveToSAN({from:"c5",to:"d4"}) === "cxd4";
 
       chess = new Chess({fen:"k7/8/3R4/8/8/8/3R4/7K"});
       let ambiguousFile = chess.moveToSAN({from:"d2",to:"d4"}) === "R2d4";
@@ -154,13 +154,13 @@ describe("Movement tests", () => {
       let ambiguousRank = chess.moveToSAN({from:"b5",to:"e5"}) === "Rbe5";
 
       chess = new Chess({fen:"k7/8/8/2Q2Q2/8/8/2Q5/7K"});
-      let ambiguousFileRank = chess.moveToSAN({from:"c5",to:"f2"}) === "Qc5f2"
+      let ambiguousFileRank = chess.moveToSAN({from:"c5",to:"f2"}) === "Qc5f2";
 
       chess = new Chess();
       let invalidMove = chess.moveToSAN({from:"c2",to:"c5"}) === "";
 
       chess = new Chess();
-      let pawnMove = chess.moveToSAN({from:"d7",to:"d5"}) == "d5";
+      let pawnMove = chess.moveToSAN({from:"d7",to:"d5"}) === "d5";
 
       assert (checkmate && check && castleBlackQueen && castleWhiteKing && promote && enPassant
         && pawnCapture && ambiguousFile && ambiguousRank && ambiguousFileRank && invalidMove && pawnMove);
