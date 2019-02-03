@@ -19,13 +19,31 @@ describe("Game tests", () => {
   it("Get FEN notation", (done) => {
     try {
       const chess = new Chess();
+      const white1 = chess.fen({turn: true}).split(" ")[1] === "w";
       chess.move({from:"g2",to:"g4"});
+      const black1 = chess.fen({turn: true}).split(" ")[1] === "b";;
       chess.move({from:"g7",to:"g5"});
+      const white2 = chess.fen({turn: true}).split(" ")[1] === "w";;
       chess.move({from:"g1",to:"f3"});
+      const black2 = chess.fen({turn: true}).split(" ")[1] === "b";;
       chess.move({from:"f7",to:"f5"});
       chess.move({from:"f1",to:"h3"});
       chess.move({from:"b8",to:"c6"});
-      assert(chess.fen() === "r1bqkbnr/ppppp2p/2n5/5pp1/6P1/5N1B/PPPPPP1P/RNBQK2R");
+      const fen = chess.fen() === "r1bqkbnr/ppppp2p/2n5/5pp1/6P1/5N1B/PPPPPP1P/RNBQK2R";
+      assert(white1 && black1 && white2 && black2 && fen);
+      done();
+    } catch (e) {
+      done(e);
+    }
+  });
+
+  it("Set FEN notation", (done) => {
+    try {
+      let chess = new Chess({fen:"r1b2k2/1pp4p/3p2p1/pP1P4/2PN4/8/P5PP/4R1K1 w - - 0 24"});
+      const white1 = chess.fen({turn: true}) === "r1b2k2/1pp4p/3p2p1/pP1P4/2PN4/8/P5PP/4R1K1 w";
+      chess = new Chess({fen:"6k1/5p2/6p1/8/7p/8/6PP/6K1 b - 0 0"});
+      const black1 = chess.fen({turn: true}) === "6k1/5p2/6p1/8/7p/8/6PP/6K1 b";
+      assert(white1 && black1);
       done();
     } catch (e) {
       done(e);

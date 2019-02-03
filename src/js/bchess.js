@@ -263,16 +263,22 @@ class Chess {
     this.Moves = new Move(this);
     [this.myColor, this.theirColor] = (color === BLACK) ? [BLACK, WHITE] : [WHITE, BLACK];
     this.history = [];
+    this._turnColor = WHITE_TURN;
     this.input({fen: fen || START_FEN});
     this.moves = 0;
-    this.turnColor = WHITE_TURN;
+  }
+
+  turnColor(opts = {}) {
+    const {char} = opts;
+    const color = (this._turnColor === WHITE_TURN) ? WHITE : BLACK;
+    return (char) ? color.charAt(0) : color;
   }
 
   turn(opts = {}) {
     const { change } = opts;
     if (change)
-      this.turnColor ^= true;
-    return (this.turnColor === WHITE_TURN) ? WHITE : BLACK;
+      this._turnColor ^= true;
+    return this.turnColor();
   }
 
   board() {
@@ -381,8 +387,9 @@ class Chess {
     return hasMoves;
   }
 
-  fen() {
-    return this._board.reduce((prev, curr, idx) => {
+  fen(opts = {}) {
+    const { turn } = opts;
+    const position = this._board.reduce((prev, curr, idx) => {
       let rank = "";
       let blanks = 0;
       curr.forEach((f,i) => {
@@ -396,12 +403,17 @@ class Chess {
       return prev;
     }, [])
     .join("/");
+    const turnChar = turn ? " ".concat(this.turnColor({char:true})) : "";
+    return `${position}${turnChar}`;
   }
 
   input(opts) {
-    this.init();
     const { fen } = opts;
-    fen.split("/").forEach((l,k) => {
+    const parts = fen.split(" ");
+
+    // populate board
+    this.init();
+    parts[0].split("/").forEach((l,k) => {
         let skip = 0;
         l.split("").forEach((c,i) => {
           if (!isNaN(parseInt(c))) {
@@ -413,6 +425,11 @@ class Chess {
           }
         });
     });
+
+    // set active piece
+    if (parts.length > 1) {
+      this._turnColor = (WHITE.charAt(0) === parts[1]) ? WHITE_TURN : BLACK_TURN;
+    }
   }
 
   ascii(opts = {}) {
