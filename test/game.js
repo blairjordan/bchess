@@ -21,11 +21,11 @@ describe("Game tests", () => {
       const chess = new Chess();
       const white1 = chess.fen({turn: true}).split(" ")[1] === "w";
       chess.move({from:"g2",to:"g4"});
-      const black1 = chess.fen({turn: true}).split(" ")[1] === "b";;
+      const black1 = chess.fen({turn: true}).split(" ")[1] === "b";
       chess.move({from:"g7",to:"g5"});
-      const white2 = chess.fen({turn: true}).split(" ")[1] === "w";;
+      const white2 = chess.fen({turn: true}).split(" ")[1] === "w";
       chess.move({from:"g1",to:"f3"});
-      const black2 = chess.fen({turn: true}).split(" ")[1] === "b";;
+      const black2 = chess.fen({turn: true}).split(" ")[1] === "b";
       chess.move({from:"f7",to:"f5"});
       chess.move({from:"f1",to:"h3"});
       chess.move({from:"b8",to:"c6"});
