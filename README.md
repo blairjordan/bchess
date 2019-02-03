@@ -133,11 +133,11 @@ Undo the most recent move
 
     chess.undo();
 
-### turn
+### turnColor
 
 Whose turn is it?
 
-    chess.turn()
+    chess.turnColor()
 
 ### check
 
