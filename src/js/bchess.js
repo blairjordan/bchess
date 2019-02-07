@@ -97,7 +97,14 @@ class Move {
     let moves = [];
     let [q, k] = [true, true];
     const king = this.chess._get(Chess.rankIdx(r), FILES[f]);
-    
+
+    const testMove = (r,f) => {
+
+      this.chess._move(king,this.chess._get(Chess.rankIdx(r), FILES[f]),"",{action:Action.MOVE});
+      console.log(r,f);
+      //this.chess.undo();
+    }
+
     // king has moved?
     if (king.file !== E || king.piece.hasMoved())
       [q, k] = [false, false];
@@ -106,6 +113,7 @@ class Move {
     for (let i = f + 1; i < WIDTH - 1; i++) {
       if (this.chess._get(Chess.rankIdx(r), FILES[i]).piece.isSet())
         k = false;
+      testMove(r,i);
     }
     // left side
     for (let i = f - 1; i > 0; i--) {
@@ -600,9 +608,8 @@ class Chess {
   }
 
   // move piece at source square to target square
-  _move(from, to, promote = QUEEN) {
-    const available = this._available(from);
-    const { action, modifiers, capture } = this._action(from, to);
+  _move(from, to, promote = QUEEN, override = null) {
+    const { action, modifiers, capture } = override || this._action(from, to);
 
     if (action & Action.INVALID_ACTION)
       return action;
