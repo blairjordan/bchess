@@ -52,14 +52,12 @@ const SAN = {
 const Action = {
   MOVE: 1,
   PLAYER_CAPTURE: 2,
-  PLAYER_CAPTURE_KING: 4,
-  OPPONENT_CAPTURE: 8,
-  OPPONENT_CAPTURE_KING: 16,
-  CASTLE_KING: 32,
-  CASTLE_QUEEN: 64,
-  EN_PASSANT: 128,
-  PROMOTE: 256,
-  INVALID_ACTION: 512
+  OPPONENT_CAPTURE: 4,
+  CASTLE_KING: 8,
+  CASTLE_QUEEN: 16,
+  EN_PASSANT: 32,
+  PROMOTE: 64,
+  INVALID_ACTION: 128
 };
 const Unicode =
 {
@@ -576,15 +574,9 @@ class Chess {
         } else {
           capture = to;
           if (to.piece.color === this.theirColor) {
-            if (to.piece.name === KING)
-              action = Action.PLAYER_CAPTURE_KING;
-            else
-              action = Action.PLAYER_CAPTURE;
+            action = Action.PLAYER_CAPTURE;
           } else {
-            if (to.piece.name === KING)
-              action = Action.OPPONENT_CAPTURE_KING;
-            else
-              action = Action.OPPONENT_CAPTURE;
+            action = Action.OPPONENT_CAPTURE;
           }
         }
       } else if (from.piece.name === PAWN && Chess.fileIdx(from.file) !== Chess.fileIdx(to.file)) {
@@ -678,7 +670,7 @@ class Chess {
     if (move.action & Action.EN_PASSANT)
       this.get({square: `${move.to.file}${move.to.rank+((move.piece.color === WHITE) ? -1 : 1)}`}).piece = move.capture;
 
-    if (move.action & (Action.PLAYER_CAPTURE | Action.PLAYER_CAPTURE_KING | Action.OPPONENT_CAPTURE | Action.OPPONENT_CAPTURE_KING))
+    if (move.action & (Action.PLAYER_CAPTURE | Action.OPPONENT_CAPTURE))
       to.piece = move.capture;
     else 
       to.piece = new Piece();

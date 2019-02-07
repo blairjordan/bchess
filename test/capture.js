@@ -84,28 +84,4 @@ describe("Capture tests", () => {
         done(e);
       }
   });
-
-  it("You capture king", (done) => {
-    try {
-        const chess = new Chess();
-        chess.set({square: "e7", piece: new Piece("R","white")});
-        let move = chess.move({from: "e7", to: "e8"});
-        assert(move === Action.PLAYER_CAPTURE_KING);
-        done();
-      } catch (e) {
-        done(e);
-      }
-  });
-
-  it("Opponent captures king", (done) => {
-    try {
-        const chess = new Chess();
-        chess.set({square: "d3", piece: new Piece("N","black")});
-        let move = chess.move({from: "d3", to: "e1"});
-        assert(move === Action.OPPONENT_CAPTURE_KING);
-        done();
-      } catch (e) {
-        done(e);
-      }
-  });
 });
