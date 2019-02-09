@@ -97,23 +97,24 @@ class Move {
     let moves = [];
     let [q, k] = [true, true];
     const king = this.chess._get(Chess.rankIdx(r), FILES[f]);
+    const color = king.piece.color;
 
-    const testMove = (r,f) => {
-
+    // test for check
+    const test = (r,f) => {
       this.chess._move(king,this.chess._get(Chess.rankIdx(r), FILES[f]),"",{action:Action.MOVE});
-      console.log(r,f);
-      //this.chess.undo();
+      const available = this.chess.check({color:(color === WHITE) ? BLACK : WHITE}).length === 0;
+      this.chess.undo();
+      return available;
     }
 
     // king has moved?
     if (king.file !== E || king.piece.hasMoved())
-      [q, k] = [false, false];
+      return [];
 
     // right side
     for (let i = f + 1; i < WIDTH - 1; i++) {
-      if (this.chess._get(Chess.rankIdx(r), FILES[i]).piece.isSet())
+      if (this.chess._get(Chess.rankIdx(r), FILES[i]).piece.isSet() || !test(r,i))
         k = false;
-      testMove(r,i);
     }
     // left side
     for (let i = f - 1; i > 0; i--) {
@@ -350,7 +351,7 @@ class Chess {
   check(opts = {}) {
     let checked = [];
     this.find(opts).forEach(f => {
-      this._available(f).forEach(a => {
+      this._available({square: f, castle: false}).forEach(a => {
         if (a.piece.name === KING)
           checked.push({ checked:a, by:f });
       });
@@ -381,11 +382,10 @@ class Chess {
   hasMoves(opts = {}) {
     let hasMoves = { white: false, black: false };
     this.find({...opts}).forEach(f => {
-      this._available(f).some(a => {
-        if (!(this._move(f, a) & (Action.CASTLE_KING | Action.CASTLE_QUEEN))) {
-          if (this.check({}).filter(c => c.checked.piece.color === a.piece.color).length === 0)
+      this._available({square:f, castle: false}).some(a => {
+        this._move(f, a);
+        if (this.check({}).filter(c => c.checked.piece.color === a.piece.color).length === 0)
           hasMoves[a.piece.color] = true;
-        }
         this.undo();
         return hasMoves[f.piece.color];
       });
@@ -496,10 +496,11 @@ class Chess {
 
   populated(s) { return (Chess._inbounds(s.r, s.f) && this._get(Chess.rankIdx(s.r), FILES[s.f]).piece.isSet()); }
 
-  _available(square) {
-    let piece = square.piece.name;
-    let color = square.piece.color;
-    let [r, f] = [Chess.rankIdx(square.rank), Chess.fileIdx(square.file)];
+  _available(opts) {
+    const {square,castle = true} = opts;
+    const piece = square.piece.name;
+    const color = square.piece.color;
+    const [r, f] = [Chess.rankIdx(square.rank), Chess.fileIdx(square.file)];
 
     let available = [];
 
@@ -517,7 +518,7 @@ class Chess {
         available = [...this.Moves.straight(r, f), ...this.Moves.diag(r, f)];
         break;
       case KING:
-        available = [...this.Moves.box(r, f), ...this.Moves.castle(r, f)];
+        available = [...this.Moves.box(r, f), ...((castle) ? this.Moves.castle(r, f) : [])];
         break;
       case KNIGHT:
         available = this.Moves.L(r, f);
@@ -555,7 +556,7 @@ class Chess {
   _action(from, to) {
     let action = Action.MOVE;
 
-    if (!this._available(from).find(a => (((a.rank) === to.rank) && ((a.file) === to.file))))
+    if (!this._available({square:from}).find(a => (((a.rank) === to.rank) && ((a.file) === to.file))))
       action = Action.INVALID_ACTION;
 
     let modifiers = {
@@ -721,7 +722,7 @@ class Chess {
 
   // return available moves for a specified location
   available(opts) {
-    return this._available(this._get(...Chess._split(opts.square)));
+    return this._available({square: this._get(...Chess._split(opts.square))});
   }
 
   // set a piece down at location
@@ -737,7 +738,7 @@ class Chess {
         .map(s => ( // if an available move matches destination square, ambiguous
             {
               from: s, 
-              ambiguous: this._available(s).filter(a => (a.rank === to.rank) && (a.file === to.file)).length > 0
+              ambiguous: this._available({square: s}).filter(a => (a.rank === to.rank) && (a.file === to.file)).length > 0
             }
         ))
     )
