@@ -118,7 +118,7 @@ class Move {
     }
     // left side
     for (let i = f - 1; i > 0; i--) {
-      if (this.chess._get(Chess.rankIdx(r), FILES[i]).piece.isSet())
+      if (this.chess._get(Chess.rankIdx(r), FILES[i]).piece.isSet() || !test(r,i))
         q = false;
     }
 
