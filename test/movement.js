@@ -47,7 +47,7 @@ describe("Movement tests", () => {
     }
   });
 
-  it("Attempt invalid castling", (done) => {
+  it("Attempt invalid castling movement (moved king or rook)", (done) => {
     try {
       let [whiteQueensideRook, whiteKingsideRook, blackQueensideRook, blackKingsideRook, whiteKingsideKing] = Array(5).fill(false);
       let action = null;
@@ -83,6 +83,35 @@ describe("Movement tests", () => {
       whiteKingsideKing = (action === Action.INVALID_ACTION);
 
       assert(whiteQueensideRook && whiteKingsideRook && blackQueensideRook && blackKingsideRook && whiteKingsideKing);
+      
+      done();
+    } catch (e) {
+      done(e);
+    }
+  });
+
+  it("Check castling availability (out of, through, or into check)", (done) => {
+    try {
+      // test white castling out of check
+      let chess = new Chess({fen:"4k3/pppppppp/4r3/8/8/R7/PPPP1PPP/R3K2R"});
+      let available = chess.available({square:"e1"}).map(s => `${s.file}${s.rank}`);
+      const whiteOut = !available.includes("a1") && !available.includes("h1");
+
+      // test white castling through check (queen side)
+      chess = new Chess({fen:"4k3/pppppppp/3r4/8/8/R7/PPP1PPPP/R3K2R"});
+      const whiteQueensideThrough = !chess.available({square:"e1"}).map(s => `${s.file}${s.rank}`).includes("a1");
+
+      // test white castling through check (king side)
+      chess = new Chess({fen:"4k3/pppppppp/5r2/8/8/R7/PPPPP1PP/R3K2R"});
+      const whiteKingsideThrough = !chess.available({square:"e1"}).map(s => `${s.file}${s.rank}`).includes("h1");
+
+      // test white castling into check
+      chess = new Chess({fen:"4k3/pppppppp/6r1/8/8/R7/PPPPPP1P/R3K2R"});
+      const whiteKingsideInto = !chess.available({square:"e1"}).map(s => `${s.file}${s.rank}`).includes("h1");
+
+      // TODO: Add black tests
+
+      assert(whiteOut && whiteQueensideThrough && whiteKingsideThrough && whiteKingsideInto);
       
       done();
     } catch (e) {

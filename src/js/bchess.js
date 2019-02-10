@@ -100,10 +100,14 @@ class Move {
     const color = king.piece.color;
 
     // test for check
-    const test = (r,f) => {
-      this.chess._move(king,this.chess._get(Chess.rankIdx(r), FILES[f]),"",{action:Action.MOVE});
+    const test = (r,f,m = true) => {
+      const [rank,file] = [Chess.rankIdx(r), FILES[f]];
+      //console.log('testing',rank,file)
+      if (m)
+        this.chess._move(king,this.chess._get(rank, file),"",{action:Action.MOVE});
       const available = this.chess.check({color:(color === WHITE) ? BLACK : WHITE}).length === 0;
-      this.chess.undo();
+      if (m)
+        this.chess.undo();
       return available;
     }
 
@@ -111,14 +115,18 @@ class Move {
     if (king.file !== E || king.piece.hasMoved())
       return [];
 
-    // right side
+    // king already checked?
+    if (!test(r,f,false))
+      return [];
+
+    // king side (right)
     for (let i = f + 1; i < WIDTH - 1; i++) {
       if (this.chess._get(Chess.rankIdx(r), FILES[i]).piece.isSet() || !test(r,i))
         k = false;
     }
-    // left side
+    // queen side (left)
     for (let i = f - 1; i > 0; i--) {
-      if (this.chess._get(Chess.rankIdx(r), FILES[i]).piece.isSet() || !test(r,i))
+      if (this.chess._get(Chess.rankIdx(r), FILES[i]).piece.isSet() || ((i > 1) && !test(r,i)))
         q = false;
     }
 
