@@ -93,40 +93,41 @@ class Move {
     this.chess = parent;
   }
 
+  // Tests for precheck
+  precheck(opts) {
+    const {from, to, color, move = true} = opts;
+    if (move)
+      this.chess._move(from,to,"",{action:Action.MOVE});
+    const available = this.chess.check({color:(color === WHITE) ? BLACK : WHITE}).length === 0;
+    if (move)
+      this.chess.undo();
+    return available;
+  }
+
   castle(r, f) {
     let moves = [];
     let [q, k] = [true, true];
     const king = this.chess._get(Chess.rankIdx(r), FILES[f]);
     const color = king.piece.color;
 
-    // test for check
-    const test = (r,f,m = true) => {
-      const [rank,file] = [Chess.rankIdx(r), FILES[f]];
-      //console.log('testing',rank,file)
-      if (m)
-        this.chess._move(king,this.chess._get(rank, file),"",{action:Action.MOVE});
-      const available = this.chess.check({color:(color === WHITE) ? BLACK : WHITE}).length === 0;
-      if (m)
-        this.chess.undo();
-      return available;
-    }
-
     // king has moved?
     if (king.file !== E || king.piece.hasMoved())
       return [];
 
     // king already checked?
-    if (!test(r,f,false))
+    if (!this.test({from:king, color, move:false}))
       return [];
 
     // king side (right)
     for (let i = f + 1; i < WIDTH - 1; i++) {
-      if (this.chess._get(Chess.rankIdx(r), FILES[i]).piece.isSet() || !test(r,i))
+      if (this.chess._get(Chess.rankIdx(r), FILES[i]).piece.isSet() 
+        || !this.test({ from:king, to: this.chess._get(Chess.rankIdx(r), FILES[i]), color}))
         k = false;
     }
     // queen side (left)
     for (let i = f - 1; i > 0; i--) {
-      if (this.chess._get(Chess.rankIdx(r), FILES[i]).piece.isSet() || ((i > 1) && !test(r,i)))
+      if (this.chess._get(Chess.rankIdx(r), FILES[i]).piece.isSet() 
+        || ((i > 1) && !this.test({ from:king, to: this.chess._get(Chess.rankIdx(r), FILES[i]), color})))
         q = false;
     }
 
@@ -234,6 +235,7 @@ class Move {
 
   box(r, f) {
     let moves = [];
+    const king = this.chess._get(Chess.rankIdx(r), FILES[f]);
     Chess.add(moves, { r: r - 1, f, p: Direction.UP });
     Chess.add(moves, { r: r + 1, f, p: Direction.DOWN });
     Chess.add(moves, { r, f: f - 1, p: Direction.LEFT });
@@ -242,6 +244,7 @@ class Move {
     Chess.add(moves, { r: r - 1, f: f + 1, p: Direction.UP_RIGHT });
     Chess.add(moves, { r: r + 1, f: f - 1, p: Direction.DOWN_LEFT });
     Chess.add(moves, { r: r + 1, f: f + 1, p: Direction.DOWN_RIGHT });
+    moves.filter(m => this.check({from:king,to:this.chess._get(Chess.rankIdx(m.r), FILES[m.f]),}));
     return moves;
   }
 
