@@ -115,19 +115,19 @@ class Move {
       return [];
 
     // king already checked?
-    if (!this.test({from:king, color, move:false}))
+    if (!this.precheck({from:king, color, move:false}))
       return [];
 
     // king side (right)
     for (let i = f + 1; i < WIDTH - 1; i++) {
       if (this.chess._get(Chess.rankIdx(r), FILES[i]).piece.isSet() 
-        || !this.test({ from:king, to: this.chess._get(Chess.rankIdx(r), FILES[i]), color}))
+        || !this.precheck({ from:king, to: this.chess._get(Chess.rankIdx(r), FILES[i]), color}))
         k = false;
     }
     // queen side (left)
     for (let i = f - 1; i > 0; i--) {
       if (this.chess._get(Chess.rankIdx(r), FILES[i]).piece.isSet() 
-        || ((i > 1) && !this.test({ from:king, to: this.chess._get(Chess.rankIdx(r), FILES[i]), color})))
+        || ((i > 1) && !this.precheck({ from:king, to: this.chess._get(Chess.rankIdx(r), FILES[i]), color})))
         q = false;
     }
 
@@ -235,7 +235,6 @@ class Move {
 
   box(r, f) {
     let moves = [];
-    const king = this.chess._get(Chess.rankIdx(r), FILES[f]);
     Chess.add(moves, { r: r - 1, f, p: Direction.UP });
     Chess.add(moves, { r: r + 1, f, p: Direction.DOWN });
     Chess.add(moves, { r, f: f - 1, p: Direction.LEFT });
@@ -244,7 +243,6 @@ class Move {
     Chess.add(moves, { r: r - 1, f: f + 1, p: Direction.UP_RIGHT });
     Chess.add(moves, { r: r + 1, f: f - 1, p: Direction.DOWN_LEFT });
     Chess.add(moves, { r: r + 1, f: f + 1, p: Direction.DOWN_RIGHT });
-    moves.filter(m => this.check({from:king,to:this.chess._get(Chess.rankIdx(m.r), FILES[m.f]),}));
     return moves;
   }
 
