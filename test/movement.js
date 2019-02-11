@@ -47,7 +47,7 @@ describe("Movement tests", () => {
     }
   });
 
-  it("Attempt invalid castling", (done) => {
+  it("Attempt invalid castling movement (moved king or rook)", (done) => {
     try {
       let [whiteQueensideRook, whiteKingsideRook, blackQueensideRook, blackKingsideRook, whiteKingsideKing] = Array(5).fill(false);
       let action = null;
@@ -83,6 +83,51 @@ describe("Movement tests", () => {
       whiteKingsideKing = (action === Action.INVALID_ACTION);
 
       assert(whiteQueensideRook && whiteKingsideRook && blackQueensideRook && blackKingsideRook && whiteKingsideKing);
+      
+      done();
+    } catch (e) {
+      done(e);
+    }
+  });
+
+  it("Check castling availability (out of, through, or into check)", (done) => {
+    try {
+      // test white castling out of check
+      let chess = new Chess({fen:"4k3/pppppppp/4r3/8/8/8/PPPP1PPP/R3K2R"});
+      let available = chess.available({square:"e1"}).map(s => `${s.file}${s.rank}`);
+      const whiteOut = !available.includes("a1") && !available.includes("h1");
+
+      // test white castling through check (queen side)
+      chess = new Chess({fen:"4k3/pppppppp/3r4/8/8/8/PPP1PPPP/R3K2R"});
+      const whiteQueensideThrough = !chess.available({square:"e1"}).map(s => `${s.file}${s.rank}`).includes("a1");
+
+      // test white castling through check (king side)
+      chess = new Chess({fen:"4k3/pppppppp/5r2/8/8/8/PPPPP1PP/R3K2R"});
+      const whiteKingsideThrough = !chess.available({square:"e1"}).map(s => `${s.file}${s.rank}`).includes("h1");
+
+      // test white castling into check
+      chess = new Chess({fen:"4k3/pppppppp/6r1/8/8/8/PPPPPP1P/R3K2R"});
+      const whiteKingsideInto = !chess.available({square:"e1"}).map(s => `${s.file}${s.rank}`).includes("h1");
+
+      // test black castling out of check
+      chess = new Chess({fen:"r3k2r/pppp1ppp/8/8/8/4R3/PPPPPPPP/4K3"});
+      available = chess.available({square:"e8"}).map(s => `${s.file}${s.rank}`);
+      const blackOut = !available.includes("a8") && !available.includes("h8");
+
+      // test black castling through check (queen side)
+      chess = new Chess({fen:"r3k2r/ppp1pppp/8/8/8/3R4/PPPPPPPP/4K3"});
+      const blackQueensideThrough = !chess.available({square:"e8"}).map(s => `${s.file}${s.rank}`).includes("a8");
+
+      // test black castling through check (king side)
+      chess = new Chess({fen:"r3k2r/ppppp1pp/8/8/8/5R2/PPPPPPPP/4K3"});
+      const blackKingsideThrough = !chess.available({square:"e8"}).map(s => `${s.file}${s.rank}`).includes("h8");
+
+      // test black castling into check
+      chess = new Chess({fen:"r3k2r/pp1ppppp/8/8/8/2R5/PPPPPPPP/4K3"});
+      let blackQueensideInto = !chess.available({square:"e8"}).map(s => `${s.file}${s.rank}`).includes("a8");
+
+      assert(whiteOut && whiteQueensideThrough && whiteKingsideThrough && whiteKingsideInto
+          && blackOut && blackQueensideThrough && blackKingsideThrough && blackQueensideInto);
       
       done();
     } catch (e) {

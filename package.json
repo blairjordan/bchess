@@ -1,6 +1,6 @@
 {
   "name": "bchess",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Yet another chess engine.",
   "main": "dist/bchess.js",
   "dependencies": {},
@@ -16,7 +16,8 @@
     "start": "node server.js",
     "test": "nyc mocha --timeout 10000 --exit",
     "report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
-    "build": "gulp uglify && gulp copy"
+    "build": "gulp uglify && gulp copy",
+    "debug": "node --nolazy --inspect-brk=9229 debug.js"
   },
   "repository": {
     "type": "git",
